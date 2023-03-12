@@ -43,6 +43,16 @@ const commands: Command[] = [
     argsCount: 1,
   },
   {
+    name: "ifdef",
+    action: (args: string[]): RetType => variables.has(args[0]),
+    argsCount: 1,
+  },
+  {
+    name: "ifndef",
+    action: (args: string[]): RetType => !variables.has(args[0]),
+    argsCount: 1,
+  },
+  {
     name: "ifeq",
     action: (args: string[]): RetType => parseArg(args[0]) == parseArg(args[1]),
     argsCount: 2,
@@ -77,6 +87,15 @@ const commands: Command[] = [
     name: "ifs",
     action: (args: string[]): RetType => {
       const result = !!parseArg(args[0]);
+      if (result) variables.set(args[1], parseArg(args[2]));
+      return result;
+    },
+    argsCount: 3,
+  },
+  {
+    name: "ifdefs",
+    action: (args: string[]): RetType => {
+      const result = variables.has(args[0]);
       if (result) variables.set(args[1], parseArg(args[2]));
       return result;
     },
@@ -176,12 +195,12 @@ yargs(hideBin(process.argv))
           default: "stdout",
           type: "string",
         })
-        .option("markers", {
+        /*    .option("markers", {
           alias: "m",
           describe: "set markers for preprocessor",
           type: "array",
           default: ["$[", "]$"],
-        })
+        }) */
         .option("check", {
           alias: "c",
           describe: "checks/validates the file only",
@@ -205,11 +224,11 @@ yargs(hideBin(process.argv))
           type: "boolean",
           default: false,
         })
-        .option("no-template", {
+        /*         .option("no-template", {
           describe: "disables the template replacement",
           type: "boolean",
           default: false,
-        })
+        }) */
         .option("no-vars", {
           describe: "disables the variables replacement",
           type: "boolean",
@@ -243,12 +262,8 @@ yargs(hideBin(process.argv))
       // parse variables from cli
       for (const arg of argv._) {
         const [key, value] = arg.toString().split(/=(.*)/s);
-        if (key !== undefined && value === undefined) {
-          err(chalk.red(`Invalid variable '${key}'. Variable must be in format 'key=value'`));
-          stop(1);
-        }
         vlog(`Setting variable '${key}' to '${value}'`);
-        variables.set(key, value);
+        variables.set(key, value ?? "");
       }
 
       if (argv.file === undefined) {
@@ -404,7 +419,7 @@ yargs(hideBin(process.argv))
           return variable;
         });
       }
-      
+
       // output validation result or data
       if (!argv.check) {
         if (argv.output === "stdout") {
