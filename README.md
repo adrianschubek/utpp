@@ -76,6 +76,8 @@ Move the executable to `/usr/bin` for easier CLI access: `sudo mv <your-file> /u
 
 ## Usage
 
+Show help page by running `ufpp`.
+
 ### API
 
 
