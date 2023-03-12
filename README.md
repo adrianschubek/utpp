@@ -48,14 +48,17 @@ are published every [release](https://github.com/adrianschubek/ufpp/releases) an
 #### Compile binaries yourself
 
 1. clone this repo
-2. run `npm run pack`
-3. binaries for various platforms are compiled in `/dist`
+2. run `npm install`
+3. run `tsc` to compile TypeScript files
+4. run `npm run pack`
+5. binaries for various platforms are compiled in `/dist`
 
 #### Using node (and tsc)
 
 1. clone this repo
-2. run `tsc` to compile TypeScript files
-3. run `node out/index.js`
+2. run `npm install`
+3. run `tsc` to compile TypeScript files
+4. run `node out/index.js`
 
 ## Roadmap
 - [ ] custom markers
