@@ -156,7 +156,7 @@ yargs(hideBin(process.argv))
   .version("0.1.0")
   .example("ufpp -o out.txt input.txt", "runs the preprocessor on input.txt and write output to out.txt")
   .example('ufpp -o out.txt input.txt -m "<#" "#>"', "runs the preprocessor on input.txt and write output to out.txt with markers <# and #>")
-  .example("ufpp -v input.txt", "validates the syntax of input.txt file")
+  .example("ufpp -c input.txt", "validates the syntax of input.txt file")
   // .command("check <file>", "checks the preprocessor", (builder) => {})
   .command(
     ["run <file>", "$0"],
