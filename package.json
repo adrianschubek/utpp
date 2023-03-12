@@ -1,9 +1,14 @@
 {
-  "name": "upp",
+  "name": "ufpp",
   "version": "0.1.0",
   "description": "Universal Pre-Processor",
-  "main": "dist/index.js",
-  "scripts": {},
+  "main": "out/index.js",
+  "bin": "out/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "pack": "pkg . --out-path dist --targets node18-alpine-x64,node18-linux-x64,node18-linux-arm64,node18-macos-x64,node18-macos-arm64,node18-win-x64"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/adrianschubek/upp.git"
@@ -20,6 +25,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.15.0",
-    "@types/yargs": "^17.0.22"
+    "@types/yargs": "^17.0.22",
+    "pkg": "^5.8.1"
   }
 }
