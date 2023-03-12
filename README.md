@@ -82,18 +82,30 @@ A variable can either be a `key=value` pair or just a `key`. Multiple variables 
 
 ### Syntax
 
+#### Blocks
+
 A template block can be declared by using one or more `$[<command>]$` statements where `<command>` is a valid command (see API reference below) and must end in a `$[end]$` statement. A command generally follows this syntax `<name> [arg1] [arg2] ... [argN]` where `argN` is a [*Value*](#values).
 
-*Example:*
+#### Variables
+
+A variable can be used inside a template block's *Value* by using its name. Variables are stored globally and changes to a variable can only affect statements declared **after** the current one. Outputting a variable can be done using `${<name>}$` where `<name>` is the variable's name.
+
+*Example: test.txt*
 ```
 foobar
 $[if `1 + 2 == 4`]$
 a
 $[ifeq foo bar]$
-b
+b ${foo}$
 $[else]$
 c
 $[end]$
+```
+
+Running this example with `ufpp test.txt foo=bar` will result in the following output:
+```
+foobar
+b bar
 ```
 
 #### Values
