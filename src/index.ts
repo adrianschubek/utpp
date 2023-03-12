@@ -155,9 +155,9 @@ yargs(hideBin(process.argv))
   .epilogue("for more info and support visit https://github.com/adrianschubek/ufpp")
   .version("0.1.0")
   .example("ufpp -o out.txt input.txt", "runs the preprocessor on input.txt and write output to out.txt")
-  .example('ufpp -o out.txt input.txt -m "<#" "#>"', "runs the preprocessor on input.txt and write output to out.txt with markers <# and #>")
+  .example("ufpp input.txt foo=bar", "runs the preprocessor on input.txt and sets variable foo to bar")
+  .example('ufpp input.txt -m "<#" "#>"', "runs the preprocessor on input.txt and write output to out.txt with markers <# and #>")
   .example("ufpp -c input.txt", "validates the syntax of input.txt file")
-  // .command("check <file>", "checks the preprocessor", (builder) => {})
   .command(
     ["run <file>", "$0"],
     "runs the preprocessor",
@@ -204,11 +204,9 @@ yargs(hideBin(process.argv))
           type: "boolean",
           default: false,
         });
+      // .parserConfiguration({ "unknown-options-as-args": true });
     },
     (argv) => {
-      // log(argv);
-      // stop(0);
-
       // default log
       const log = (message?: any, ...optionalParams: any[]) => {
         if (!argv.quiet) console.log(message, ...optionalParams);
@@ -231,6 +229,17 @@ yargs(hideBin(process.argv))
         process.exit(exitCode);
       };
 
+      // parse variables from cli
+      for (const arg of argv._) {
+        const [key, value] = arg.toString().split(/=(.*)/s);
+        if (key !== undefined && value === undefined) {
+          err(chalk.red(`Invalid variable '${key}'. Variable must be in format 'key=value'`));
+          stop(1);
+        }
+        vlog(`Setting variable '${key}' to '${value}'`);
+        variables.set(key, value);
+      }
+
       if (argv.file === undefined) {
         err(chalk.red("No file specified."));
         stop(1);
@@ -243,19 +252,7 @@ yargs(hideBin(process.argv))
 
       // raw file data
       let data = fs.readFileSync(argv.file, "utf-8").toString("utf-8");
-      /*  .split("\n")
-        .forEach((_l) => {
-          const l = _l.trim();
 
-          if (l.ma)
-
-          log(">>> " + l);
-        }); */
-
-      // all: \$\[(.*?)\]\$
-      // const matches = data.matchAll(/\$\[(.*?)\]\$/g);
-
-      // besser: (\$\[(.*?)\]\$)([\w\W]*?\$\[end\]\$)
       const blockMatches = data.matchAll(/(\$\[(.*?)\]\$)([\w\W]*?)(\$\[end\]\$)/g) || [];
 
       let processCmds = 0;
@@ -382,6 +379,17 @@ yargs(hideBin(process.argv))
         stop(1);
       }
 
+      // replace variables ${}$ with their values
+      data = data.replaceAll(/\$\{(.*?)\}\$/g, (match) => {
+        const variable = variables.get(match.slice(2, -2));
+        if (!variable) {
+          err(chalk.red(`Variable '${match.slice(2, -2)}' does not exist.`));
+          stop(1);
+          return match;
+        }
+        return variable;
+      });
+
       // output validation result or data
       if (!argv.check) {
         if (argv.output === "stdout") {
@@ -398,7 +406,7 @@ yargs(hideBin(process.argv))
         } else {
           // output processed blocks
           log(chalk.green(`Processed ${processCmds} commands in ${processedBlockes} blocks.`));
-          vlog(chalk.green(`Syntax OK.`));
+          log(chalk.green(`Syntax OK.`));
         }
       }
 

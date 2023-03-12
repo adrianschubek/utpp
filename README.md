@@ -25,6 +25,11 @@ Examples:
   ufpp -c input.txt                       validates the syntax of input.txt file
 ```
 
+### Install & Update
+```bash
+curl -FfSL
+```
+
 ### Roadmap
 - [ ] custom markers
 
@@ -43,6 +48,7 @@ ifdef NAME
 ifndef NAME
 else
 endif
+TODFO: print value echo
 
 VALUE: foo
 VALUE: "foo bar"
@@ -59,7 +65,7 @@ $[else]$
   bar
 $[end]$
 
-s
+${foo}$ <- variable print
 
 $[if "foo bar"]$
 
