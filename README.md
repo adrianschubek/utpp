@@ -93,11 +93,11 @@ Otherwise this statement will be skipped and the next statement is evaluated. If
 There can be any number of blocks declared in a file, but blocks **cannot** be nested.
 
 #### Commands
-A command generally follows this syntax `$[<name> [arg1] [arg2] ... [argN]]$` where `arg` is a [*Value*](#values).
+A command generally follows this syntax `$[<name> [arg1] [arg2] ... [argN]]$` where `arg` is a [*Value*](#values). All commands return either `true` or `false`.
 
 #### Variables
 
-A variable can be used inside a template block's *Value* by using its name. Variables are stored globally and changes to a variable can only affect statements declared **after** the current one. Outputting a variable can be done using `${<name>}$` where `<name>` is the variable's name.
+A variable can be used inside a template block's *Value* by using its name. Variables are stored globally and changes to a variable can only affect statements declared **after** the current one. Outputting a variable can be done using `${<name>}$` (curly braces) where `<name>` is the variable's name.
 
 *Example: test.txt*
 ```
