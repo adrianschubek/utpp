@@ -1,0 +1,7 @@
+$[if `false`]$
+a
+$[if `true`]$
+b
+$[else]$
+c
+$[end]$

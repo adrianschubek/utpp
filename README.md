@@ -1,4 +1,4 @@
-# upp
+# ufpp
 Universal File Pre-Processor
 
 
@@ -6,18 +6,44 @@ any file with
 
 ./tool test.txt --VAR=bla > out.txt
 
-ifeq 
-ifne (!=)
-iflt (<) 
-ifgt 
-ifge 
-ifle (<=)
+ifeq NAME VALUE
+ifne (!=) NAME VALUE
+iflt (<) NAME VALUE
+ifgt NAME VALUE
+ifge NAME VALUE
+ifle (<=) NAME VALUE
+ifdef NAME
+ifndef NAME
+else
+endif
+
+VALUE: foo
+VALUE: "foo bar"
+VALUE: `2+3` (backticks) will be interpreted (eval'd) as javascript
+
+! NO nesting !
 
 --- test.txt
-!!ifeq VAR bla!!  
+$[ifeqs show bla didShow 1]$
   lol
-!!endif!!
+$[if `1+2 == 5`]$
+ aa
+$[else]$
+  bar
+$[end]$
 
---- alternative same zeile
+s
 
-test !#ifeq 
+$[if "foo bar"]$
+
+$[end]$
+
+--- alternative same zeile TODO: roadmap
+
+test $[ifeq foo bar]$baz$[end]$ 
+
+$[if 1]$ 
+a
+$[else]$ 
+b
+$[end]$
