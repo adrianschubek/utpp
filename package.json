@@ -1,0 +1,25 @@
+{
+  "name": "upp",
+  "version": "0.1.0",
+  "description": "Universal Pre-Processor",
+  "main": "dist/index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrianschubek/upp.git"
+  },
+  "author": "Adrian Schubek",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/adrianschubek/upp/issues"
+  },
+  "homepage": "https://github.com/adrianschubek/upp#readme",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "yargs": "^17.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.0",
+    "@types/yargs": "^17.0.22"
+  }
+}
