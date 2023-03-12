@@ -55,6 +55,8 @@ Precompiled binaries for
 
 are published every [release](https://github.com/adrianschubek/ufpp/releases) and are also available in [/dist](/dist/) folder.
 
+Move the executable to `/usr/bin` for easier CLI access: `sudo mv <your-file> /usr/bin/ufpp`
+
 #### Compile binaries yourself
 
 1. clone this repo
@@ -62,6 +64,8 @@ are published every [release](https://github.com/adrianschubek/ufpp/releases) an
 3. run `tsc` to compile TypeScript files
 4. run `npm run pack`
 5. binaries for various platforms are compiled in `/dist`
+
+Move the executable to `/usr/bin` for easier CLI access: `sudo mv <your-file> /usr/bin/ufpp`
 
 #### Using node (and tsc)
 
