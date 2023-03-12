@@ -31,12 +31,33 @@ Examples:
   ufpp -c input.txt            validates the syntax of input.txt file
 ```
 
-### Install & Update
-```bash
-curl -FfSL
-```
+## Installation
 
-### Roadmap
+#### Using Precompiled binaries
+
+Precompiled binaries for
+- Windows x64
+- Linux x64
+- Linux arm64
+- Alpine Linux x64
+- MacOS x64
+- MacOS arm64
+
+are published every [release](https://github.com/adrianschubek/ufpp/releases) and are also available in [/dist](/dist/) folder.
+
+#### Compile binaries yourself
+
+1. clone this repo
+2. run `npm run pack`
+3. binaries for various platforms are compiled in `/dist`
+
+#### Using node (and tsc)
+
+1. clone this repo
+2. run `tsc` to compile TypeScript files
+3. run `node out/index.js`
+
+## Roadmap
 - [ ] custom markers
 - [ ] no-template option
 

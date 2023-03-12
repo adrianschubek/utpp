@@ -2,7 +2,10 @@ import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 import chalk from "chalk";
 import * as fs from "fs";
-import { replaceBetween } from "./utils";
+
+const replaceBetween = (str: string, start: number, end: number, what: string) => {
+  return str.substring(0, start) + what + str.substring(end);
+}
 
 const variables = new Map<string, string>();
 
