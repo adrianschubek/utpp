@@ -30,7 +30,11 @@ Examples:
 
 for more info and support visit https://github.com/adrianschubek/ufpp
 ```
-
+## Use Cases
+- Dynamically modifiy static config files based on user input
+- Replace placeholder with custom eval'd JavaScript at runtime
+- Start specific service conditionally on docker run arguments. 
+- and many more...
 ## Installation
 
 #### Using Precompiled binaries
