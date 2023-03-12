@@ -7,6 +7,46 @@
 
 </div>
 
+## Use Cases
+- Dynamically modifiy static config files based on user input
+- Replace placeholder with custom eval'd JavaScript at runtime
+- Start specific service conditionally on docker run arguments. 
+- and many more...
+## Installation
+
+#### Using Precompiled binaries
+
+Precompiled binaries for
+- Windows x64
+- Linux x64
+- Linux arm64
+- Alpine Linux x64
+- MacOS x64
+- MacOS arm64
+
+are published every [release](https://github.com/adrianschubek/ufpp/releases) and are also available in [/dist](/dist/) folder.
+
+Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-file> /usr/local/bin/ufpp`
+
+#### Compile binaries yourself
+
+1. clone this repo
+2. run `npm install`
+3. run `tsc` to compile TypeScript files
+4. run `npm run pack`
+5. binaries for various platforms are compiled in `/dist`
+
+Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-file> /usr/local/bin/ufpp`
+
+#### Using node (and tsc)
+
+1. clone this repo
+2. run `npm install`
+3. run `tsc` to compile TypeScript files
+4. run `node out/index.js`
+
+## Usage
+
 ```
 Universal File Pre-Processor ('ufpp') is a tool for preprocessing any file
 
@@ -36,49 +76,34 @@ Examples:
 
 for more info and support visit https://github.com/adrianschubek/ufpp
 ```
-## Use Cases
-- Dynamically modifiy static config files based on user input
-- Replace placeholder with custom eval'd JavaScript at runtime
-- Start specific service conditionally on docker run arguments. 
-- and many more...
-## Installation
+> Show this help page by running `ufpp`.
 
-#### Using Precompiled binaries
+A variable can either be a `key=value` pair or just a `key`. Multiple variables can be passed as arguments by using spaces like `foo=bar foz="baz 123" foobar`.
 
-Precompiled binaries for
-- Windows x64
-- Linux x64
-- Linux arm64
-- Alpine Linux x64
-- MacOS x64
-- MacOS arm64
+### Syntax
 
-are published every [release](https://github.com/adrianschubek/ufpp/releases) and are also available in [/dist](/dist/) folder.
+A template block can be declared by using one or more `$[<command>]$` statements where `<command>` is a valid command (see API reference below) and must end in a `$[end]$` statement. A command generally follows this syntax `<name> [arg1] [arg2] ... [argN]` where `argN` is a [*Value*](#values).
 
-Move the executable to `/usr/bin` for easier CLI access: `sudo mv <your-file> /usr/bin/ufpp`
+*Example:*
+```
+foobar
+$[if `1 + 2 == 4`]$
+a
+$[ifeq foo bar]$
+b
+$[else]$
+c
+$[end]$
+```
 
-#### Compile binaries yourself
-
-1. clone this repo
-2. run `npm install`
-3. run `tsc` to compile TypeScript files
-4. run `npm run pack`
-5. binaries for various platforms are compiled in `/dist`
-
-Move the executable to `/usr/bin` for easier CLI access: `sudo mv <your-file> /usr/bin/ufpp`
-
-#### Using node (and tsc)
-
-1. clone this repo
-2. run `npm install`
-3. run `tsc` to compile TypeScript files
-4. run `node out/index.js`
-
-## Usage
-
-Show help page by running `ufpp`.
+#### Values
+- Values are treated as strings by default and cannot contain spaces.
+- Values surrounded by `"` are treated as strings and can contain spaces.
+- Values surrounded by `` ` `` (backticks) are evaluated using JavaScript's `eval` function. This means you can use any valid JavaScript expression inside the `if` statement.
 
 ### API
+
+`if` 
 
 
 
@@ -86,6 +111,7 @@ Show help page by running `ufpp`.
 ## Roadmap
 - [ ] custom markers
 - [ ] no-template option
+- [ ] include data from other files
 
 <!-- 
 any file with 
