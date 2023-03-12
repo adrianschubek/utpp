@@ -3,26 +3,32 @@
 ```
 Universal File Pre-Processor ('ufpp') is a tool for preprocessing any file
 
+Usage: ufpp [options] <file> [variables]
+
 Positionals:
   file, f  the file to preprocess                                       [string]
 
 Options:
-      --help     Show help                                             [boolean]
-      --version  Show version number                                   [boolean]
-  -o, --output   the output file                    [string] [default: "stdout"]
-  -m, --markers  set markers for preprocessor     [array] [default: ["$[","]$"]]
-  -c, --check    checks/validates the file only       [boolean] [default: false]
-  -v, --verbose  makes the preprocessor verbose       [boolean] [default: false]
-  -q, --quiet    makes the preprocessor quiet         [boolean] [default: false]
-      --no-eval  disables the eval function           [boolean] [default: false]
+      --help         Show help                                         [boolean]
+      --version      Show version number                               [boolean]
+  -o, --output       the output file                [string] [default: "stdout"]
+  -m, --markers      set markers for preprocessor [array] [default: ["$[","]$"]]
+  -c, --check        checks/validates the file only   [boolean] [default: false]
+  -v, --verbose      makes the preprocessor verbose   [boolean] [default: false]
+  -q, --quiet        makes the preprocessor quiet     [boolean] [default: false]
+      --no-eval      disables the eval function       [boolean] [default: false]
+      --no-template  disables the template replacement[boolean] [default: false]
+      --no-vars      disables the variables replacement
+                                                      [boolean] [default: false]
 
 Examples:
-  ufpp -o out.txt input.txt               runs the preprocessor on input.txt and
-                                          write output to out.txt
-  ufpp -o out.txt input.txt -m "<#" "#>"  runs the preprocessor on input.txt and
-                                          write output to out.txt with markers
-                                          <# and #>
-  ufpp -c input.txt                       validates the syntax of input.txt file
+  ufpp -o out.txt input.txt    runs the preprocessor on input.txt and write
+                               output to out.txt
+  ufpp input.txt foo=bar       runs the preprocessor on input.txt and sets
+                               variable foo to bar
+  ufpp input.txt -m "<#" "#>"  runs the preprocessor on input.txt and write
+                               output to out.txt with markers <# and #>
+  ufpp -c input.txt            validates the syntax of input.txt file
 ```
 
 ### Install & Update
@@ -32,6 +38,7 @@ curl -FfSL
 
 ### Roadmap
 - [ ] custom markers
+- [ ] no-template option
 
 
 any file with 

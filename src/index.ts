@@ -151,7 +151,8 @@ const commands: Command[] = [
 
 yargs(hideBin(process.argv))
   .scriptName("ufpp")
-  .usage("Universal File Pre-Processor ('ufpp') is a tool for preprocessing any file")
+  .usage("Universal File Pre-Processor ('ufpp') is a tool for preprocessing any file\n")
+  .usage("Usage: $0 [options] <file> [variables]")
   .epilogue("for more info and support visit https://github.com/adrianschubek/ufpp")
   .version("0.1.0")
   .example("ufpp -o out.txt input.txt", "runs the preprocessor on input.txt and write output to out.txt")
@@ -201,6 +202,16 @@ yargs(hideBin(process.argv))
         })
         .option("no-eval", {
           describe: "disables the eval function",
+          type: "boolean",
+          default: false,
+        })
+        .option("no-template", {
+          describe: "disables the template replacement",
+          type: "boolean",
+          default: false,
+        })
+        .option("no-vars", {
+          describe: "disables the variables replacement",
           type: "boolean",
           default: false,
         });
@@ -256,9 +267,9 @@ yargs(hideBin(process.argv))
       const blockMatches = data.matchAll(/(\$\[(.*?)\]\$)([\w\W]*?)(\$\[end\]\$)/g) || [];
 
       let processCmds = 0;
-      let processedBlockes = 0;
+      let processedBlocks = 0;
       for (const block of blockMatches) {
-        processedBlockes++;
+        processedBlocks++;
         blockId++;
         vlog(">> NEXT BLOCK ");
         const matches = block[0].matchAll(/\$\[(.*?)\]\$/g);
@@ -380,16 +391,20 @@ yargs(hideBin(process.argv))
       }
 
       // replace variables ${}$ with their values
-      data = data.replaceAll(/\$\{(.*?)\}\$/g, (match) => {
-        const variable = variables.get(match.slice(2, -2));
-        if (!variable) {
-          err(chalk.red(`Variable '${match.slice(2, -2)}' does not exist.`));
-          stop(1);
-          return match;
-        }
-        return variable;
-      });
-
+      if (!argv.noVariables) {
+        data = data.replaceAll(/\$\{(.*?)\}\$/g, (match) => {
+          const variable = variables.get(match.slice(2, -2));
+          if (!variable) {
+            err(chalk.red(`Variable '${match.slice(2, -2)}' does not exist.`));
+            stop(1);
+            return match;
+          }
+          processCmds++;
+          processedBlocks++;
+          return variable;
+        });
+      }
+      
       // output validation result or data
       if (!argv.check) {
         if (argv.output === "stdout") {
@@ -401,11 +416,11 @@ yargs(hideBin(process.argv))
 
       if (argv.check || argv.verbose) {
         // warn if there are no matches/blocks
-        if (processedBlockes === 0) {
+        if (processedBlocks === 0) {
           log(chalk.yellow("No blocks found."));
         } else {
           // output processed blocks
-          log(chalk.green(`Processed ${processCmds} commands in ${processedBlockes} blocks.`));
+          log(chalk.green(`Processed ${processCmds} commands in ${processedBlocks} blocks.`));
           log(chalk.green(`Syntax OK.`));
         }
       }
