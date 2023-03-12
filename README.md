@@ -99,7 +99,7 @@ $[end]$
 #### Values
 - Values are treated as strings by default and cannot contain spaces.
 - Values surrounded by `"` are treated as strings and can contain spaces.
-- Values surrounded by `` ` `` (backticks) are evaluated using JavaScript's `eval` function. This means you can use any valid JavaScript expression inside the `if` statement.
+- Values surrounded by `` ` `` (backticks) are evaluated using JavaScript's `eval` function. This means you can use any valid JavaScript expression inside.
 
 ### API
 
