@@ -84,7 +84,16 @@ A variable can either be a `key=value` pair or just a `key`. Multiple variables 
 
 #### Blocks
 
-A template block can be declared by using one or more `$[<command>]$` statements where `<command>` is a valid command (see API reference below) and must end in a `$[end]$` statement. A command generally follows this syntax `<name> [arg1] [arg2] ... [argN]` where `argN` is a [*Value*](#values).
+A (template) block can be declared by using one or more `$[<command>]$` statements where `<command>` is a valid command (see API reference below) and must end in a `$[end]$` statement. 
+
+A block's statements are evaluated from top to bottom. If the result of a command is truthy, the guarded section will be outputted and all other commands in this block ignored. 
+
+Otherwise this statement will be skipped and the next statement is evaluated. If no statement in this block is truthy, the `else` section will be outputted and if no `else` section is present, nothing will be outputted.
+
+There can be any number of blocks declared in a file. Blocks **cannot** be nested.
+
+#### Commands
+A command generally follows this syntax `$[<name> [arg1] [arg2] ... [argN]]$` where `arg` is a [*Value*](#values).
 
 #### Variables
 
