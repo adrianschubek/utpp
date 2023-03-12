@@ -90,7 +90,7 @@ A block's statements are evaluated from top to bottom. If the result of a comman
 
 Otherwise this statement will be skipped and the next statement is evaluated. If no statement in this block is truthy, the `else` section will be outputted and if no `else` section is present, nothing will be outputted.
 
-There can be any number of blocks declared in a file. Blocks **cannot** be nested.
+There can be any number of blocks declared in a file, but blocks **cannot** be nested.
 
 #### Commands
 A command generally follows this syntax `$[<name> [arg1] [arg2] ... [argN]]$` where `arg` is a [*Value*](#values).
