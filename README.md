@@ -18,11 +18,8 @@
 
 Precompiled binaries for
 - Windows x64
-- Linux x64
-- Linux arm64
-- Alpine Linux x64
-- MacOS x64
-- MacOS arm64
+- Linux x64, arm64 and Alpine x64
+- MacOS x64, arm64
 
 are published every [release](https://github.com/adrianschubek/ufpp/releases) and are also available in [/dist](/dist/) folder.
 
