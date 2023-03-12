@@ -1,4 +1,4 @@
-# ufpp
+![](ufpp.png)
 
 ```
 Universal File Pre-Processor ('ufpp') is a tool for preprocessing any file
