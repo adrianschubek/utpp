@@ -90,7 +90,7 @@ Otherwise this statement will be skipped and the next statement is evaluated. If
 There can be any number of blocks declared in a file, but blocks **cannot** be nested.
 
 #### Commands
-A command generally follows this syntax `$[<name> [arg1] [arg2] ... [argN]]$` where `[arg]` is a [*Value*](#values). All commands return either `true` or `false`.
+A command generally follows this syntax `$[<name> [arg1] [arg2] ... [argN]]$` where `<name>` is a [command's name](#commands-reference) `[arg]` is a [*Value*](#values). All commands return either `true` or `false`.
 
 #### Values
 - Values are treated as strings by default and cannot contain spaces.
@@ -120,12 +120,51 @@ b bar
 ```
 
 
-### API
+### Commands Reference 
 
-`if` 
+#### Commands without side effects
 
+`if <value>` - return true when `<value>` is truthy, otherwise false.
 
+`ifdef <name>` - return true when a variable with name `<name>` is defined, otherwise false.
 
+`ifndef <name>` - return true when a variable with name `<name>` is not defined, otherwise false.
+
+`ifeq <value1> <value2>` - return true when `<value1>` is equal to `<value2>`, otherwise false.
+
+`ifne <value1> <value2>` - return true when `<value1>` is not equal to `<value2>`, otherwise false.
+
+`iflt <value1> <value2>` - return true when `<value1>` is less than `<value2>`, otherwise false.
+
+`ifgt <value1> <value2>` - return true when `<value1>` is greater than `<value2>`, otherwise false.
+
+`ifge <value1> <value2>` - return true when `<value1>` is greater than or equal to `<value2>`, otherwise false.
+
+`ifle <value1> <value2>` - return true when `<value1>` is less than or equal to `<value2>`, otherwise false.
+
+#### Commands with side effects
+
+`ifdefs <name> <variable> <newvalue>` - return true when a variable with name `<name>` is defined, otherwise false. If the statement is true, `<variable>` will be set to `<newvalue>`.
+
+`ifndefs <name> <variable> <newvalue>` - return true when a variable with name `<name>` is not defined, otherwise false. If the statement is true, `<variable>` will be set to `<newvalue>`.
+
+`ifeqs <value1> <value2> <variable> <newvalue>` - return true when `<value1>` is equal to `<value2>`, otherwise false. If the statement is true, `<variable>` will be set to `<newvalue>`.
+
+`ifnes <value1> <value2> <variable> <newvalue>` - return true when `<value1>` is not equal to `<value2>`, otherwise false. If the statement is true, `<variable>` will be set to `<newvalue>`.
+
+`iflts <value1> <value2> <variable> <newvalue>` - return true when `<value1>` is less than `<value2>`, otherwise false. If the statement is true, `<variable>` will be set to `<newvalue>`.
+
+`ifgts <value1> <value2> <variable> <newvalue>` - return true when `<value1>` is greater than `<value2>`, otherwise false. If the statement is true, `<variable>` will be set to `<newvalue>`.
+
+`ifges <value1> <value2> <variable> <newvalue>` - return true when `<value1>` is greater than or equal to `<value2>`, otherwise false. If the statement is true, `<variable>` will be set to `<newvalue>`.
+
+`ifles <value1> <value2> <variable> <newvalue>` - return true when `<value1>` is less than or equal to `<value2>`, otherwise false. If the statement is true, `<variable>` will be set to `<newvalue>`.
+
+#### Special Commands
+
+`else` - used in a block to define an alternative output when no statement in the block is truthy.	
+
+`end` - used to end a block.
 
 ## Roadmap
 - [ ] custom markers
