@@ -5,13 +5,17 @@
 ![](p2.png)
 ![](p3.png)
 
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=flat-square&logo=typescript&logoColor=white)
+[![npm](https://img.shields.io/npm/v/utpp?color=blue&style=flat-square)](https://www.npmjs.com/package/utpp)
+
 </div>
 
 ## Features
 - **Universal**: works with any file format
-- **Branching**: use if/else statements to include/exclude/modify parts of your file
+- **Branching**: use if/else logic to include/exclude/modify parts of your file
 - **Variables**: use placeholders in your file and replace them with variables
 - **Scripting**: execute custom JavaScript code anywhere
+- **Portable**: works on any platform (Windows, Linux, MacOS, Docker containers etc.)
 
 ## Use Cases
 - Dynamically modifiy static config files based on user input
