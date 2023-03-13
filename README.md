@@ -39,9 +39,11 @@ npx utpp
 
 #### Using Precompiled binaries
 
-Precompiled binaries for  **Linux** (x64, arm64, alpine), **Windows** (x64) and **MacOS** (x64, arm64) are published every [release](https://github.com/adrianschubek/utpp/releases).
+Precompiled binaries for  **Linux** (x64, arm64, alpine) and **Windows** (x64) are published every [release](https://github.com/adrianschubek/utpp/releases).
 
-`Linux-alpine` binaries are designed to be used in (Alpine) docker containers.
+*Linux-alpine* binaries are designed to be used in docker containers.
+
+**MacOS** binaries are not published yet, but you can compile them yourself (see below).
 
 #### Compile binaries yourself
 
