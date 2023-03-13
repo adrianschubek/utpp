@@ -3,12 +3,12 @@
   "version": "0.0.1",
   "description": "Universal Text Pre-Processor",
   "main": "bin/index.js",
-  "bin": "bin/index.js",
+  "bin": "bin/npx.js",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc -w",
     "pack": "pkg . --compress Brotli --out-path dist --targets node18-alpine-x64,node18-linux-x64,node18-linux-arm64,node18-macos-x64,node18-macos-arm64,node18-win-x64",
-    "build:npm": "ncc build src/index.ts -o dist"
+    "build:npm": "ncc build src/index.ts -o bin"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
     "@types/node": "^18.15.0",
     "@types/yargs": "^17.0.22",
     "pkg": "^5.8.1",
-    "ncc": "^0.36"
+    "@vercel/ncc": "^0.36.0",
+    "typescript": "^4.9"
   }
 }

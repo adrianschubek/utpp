@@ -172,15 +172,15 @@ const commands: Command[] = [
 ];
 
 yargs(hideBin(process.argv))
-  .scriptName("ufpp")
-  .usage("Universal File Pre-Processor ('ufpp') is a tool for preprocessing any file\n")
+  .scriptName("utpp")
+  .usage("Universal Text Pre-Processor ('utpp') is a tool for preprocessing any file\n")
   .usage("Usage: $0 [options] <file> [variables]")
-  .epilogue("for more info and support visit https://github.com/adrianschubek/ufpp")
+  .epilogue("for more info and support visit https://github.com/adrianschubek/utpp")
   .version("0.1.0")
-  .example("ufpp -o out.txt input.txt", "runs the preprocessor on input.txt and write output to out.txt")
-  .example("ufpp input.txt foo=bar", "runs the preprocessor on input.txt and sets variable foo to bar")
-  .example('ufpp input.txt -m "<#" "#>"', "runs the preprocessor on input.txt and write output to out.txt with markers <# and #>")
-  .example("ufpp -c input.txt", "validates the syntax of input.txt file")
+  .example("utpp -o out.txt input.txt", "runs the preprocessor on input.txt and write output to out.txt")
+  .example("utpp input.txt foo=bar", "runs the preprocessor on input.txt and sets variable foo to bar")
+  .example('utpp input.txt -m "<#" "#>"', "runs the preprocessor on input.txt and write output to out.txt with markers <# and #>")
+  .example("utpp -c input.txt", "validates the syntax of input.txt file")
   .command(
     ["run <file>", "$0"],
     "runs the preprocessor",
