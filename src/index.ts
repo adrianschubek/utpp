@@ -239,7 +239,7 @@ yargs(hideBin(process.argv))
         });
       // .parserConfiguration({ "unknown-options-as-args": true });
     },
-    (argv) => {
+    (argv: any) => {
       // default log
       const log = (message?: any, ...optionalParams: any[]) => {
         if (!argv.quiet) console.log(message, ...optionalParams);
@@ -280,7 +280,7 @@ yargs(hideBin(process.argv))
       }
 
       // raw file data
-      let data = fs.readFileSync(argv.file, "utf-8").toString("utf-8");
+      let data = fs.readFileSync(argv.file, "utf-8").toString();
 
       const blockMatches = data.matchAll(/(\$\[(.*?)\]\$)([\w\W]*?)(\$\[end\]\$)/g) || [];
 
