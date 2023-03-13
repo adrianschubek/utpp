@@ -9,7 +9,7 @@
     "build:watch": "tsc -w",
     "pack:lw": "pkg bin/index.js --compress Brotli --out-path dist --targets node18-alpine-x64,node18-linux-x64,node18-linux-arm64,node18-win-x64",
     "pack": "pkg bin/index.js --compress Brotli --out-path dist --targets node18-alpine-x64,node18-linux-x64,node18-linux-arm64,node18-macos-x64,node18-macos-arm64,node18-win-x64",
-    "build:npm": "ncc build src/index.ts -m -o bin"
+    "build:npm": "esbuild src/index.ts --bundle --minify --outfile=bin/index.js --platform=node --target=node18"
   },
   "repository": {
     "type": "git",
@@ -28,8 +28,8 @@
   "devDependencies": {
     "@types/node": "^18.15.0",
     "@types/yargs": "^17.0.22",
+    "esbuild": "^0.17.11",
     "pkg": "^5.8.1",
-    "@vercel/ncc": "^0.36.0",
     "typescript": "^4.9"
   }
 }
