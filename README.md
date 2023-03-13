@@ -90,7 +90,12 @@ Otherwise this statement will be skipped and the next statement is evaluated. If
 There can be any number of blocks declared in a file, but blocks **cannot** be nested.
 
 #### Commands
-A command generally follows this syntax `$[<name> [arg1] [arg2] ... [argN]]$` where `arg` is a [*Value*](#values). All commands return either `true` or `false`.
+A command generally follows this syntax `$[<name> [arg1] [arg2] ... [argN]]$` where `[arg]` is a [*Value*](#values). All commands return either `true` or `false`.
+
+#### Values
+- Values are treated as strings by default and cannot contain spaces.
+- Values surrounded by `"` are treated as strings and can contain spaces.
+- Values surrounded by `` ` `` (backticks) are evaluated using JavaScript's `eval` function. This means you can use any valid JavaScript expression inside.
 
 #### Variables
 
@@ -114,10 +119,6 @@ foobar
 b bar
 ```
 
-#### Values
-- Values are treated as strings by default and cannot contain spaces.
-- Values surrounded by `"` are treated as strings and can contain spaces.
-- Values surrounded by `` ` `` (backticks) are evaluated using JavaScript's `eval` function. This means you can use any valid JavaScript expression inside.
 
 ### API
 
