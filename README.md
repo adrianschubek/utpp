@@ -43,24 +43,15 @@ Precompiled binaries for  **Linux** (x64, arm64, alpine), **Windows** (x64) and 
 
 `Linux-alpine` binaries are designed to be used in (Alpine) docker containers.
 
-> Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-file> /usr/local/bin/utpp`
-
 #### Compile binaries yourself
 
 1. clone this repo
 2. run `npm install`
-3. run `tsc` to compile TypeScript files
+3. run `npm run build:npm`
 4. run `npm run pack`
 5. binaries for various platforms are compiled in `/dist`
 
 > Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-file> /usr/local/bin/utpp`
-
-#### Using node (and tsc)
-
-1. clone this repo
-2. run `npm install`
-3. run `tsc` to compile TypeScript files
-4. run `node out/index.js`
 
 ## Usage
 
@@ -195,6 +186,14 @@ b bar
 - [ ] possibility to reference variables inside JavaScript expressions
 - [ ] include data from other files
 - [ ] support mutliple files as input and output `utpp . --out-dir out/`
+
+## Development
+
+1. clone this repo
+2. run `npm install`
+3. run `npm run build:watch` 
+4. run `node out/index.js`
+
 
 <!-- 
 any file with 
