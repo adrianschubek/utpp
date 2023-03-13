@@ -3,3 +3,4 @@
 /.git
 /.vscode
 /dist
+/bin/index.js
