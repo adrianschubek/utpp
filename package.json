@@ -1,24 +1,25 @@
 {
-  "name": "ufpp",
-  "version": "0.1.0",
-  "description": "Universal Pre-Processor",
-  "main": "out/index.js",
-  "bin": "out/index.js",
+  "name": "utpp",
+  "version": "0.0.1",
+  "description": "Universal Text Pre-Processor",
+  "main": "bin/index.js",
+  "bin": "bin/index.js",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc -w",
-    "pack": "pkg . --compress Brotli --out-path dist --targets node18-alpine-x64,node18-linux-x64,node18-linux-arm64,node18-macos-x64,node18-macos-arm64,node18-win-x64"
+    "pack": "pkg . --compress Brotli --out-path dist --targets node18-alpine-x64,node18-linux-x64,node18-linux-arm64,node18-macos-x64,node18-macos-arm64,node18-win-x64",
+    "build:npm": "ncc build src/index.ts -o dist"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adrianschubek/upp.git"
+    "url": "git+https://github.com/adrianschubek/utpp.git"
   },
   "author": "Adrian Schubek",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/adrianschubek/upp/issues"
+    "url": "https://github.com/adrianschubek/utpp/issues"
   },
-  "homepage": "https://github.com/adrianschubek/upp#readme",
+  "homepage": "https://github.com/adrianschubek/utpp#readme",
   "dependencies": {
     "chalk": "^4.1.2",
     "yargs": "^17.7.1"
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@types/node": "^18.15.0",
     "@types/yargs": "^17.0.22",
-    "pkg": "^5.8.1"
+    "pkg": "^5.8.1",
+    "ncc": "^0.36"
   }
 }

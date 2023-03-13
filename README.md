@@ -1,6 +1,6 @@
 <div align="center">
 
-![](ufpp.png)
+![](utpp.png)
 ![](p1.png)
 ![](p2.png)
 ![](p3.png)
@@ -21,9 +21,9 @@ Precompiled binaries for
 - Linux x64, arm64 and Alpine x64
 - MacOS x64, arm64
 
-are published every [release](https://github.com/adrianschubek/ufpp/releases) and are also available in [/dist](/dist/) folder.
+are published every [release](https://github.com/adrianschubek/utpp/releases) and are also available in [/dist](/dist/) folder.
 
-Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-file> /usr/local/bin/ufpp`
+Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-file> /usr/local/bin/utpp`
 
 #### Compile binaries yourself
 
@@ -33,7 +33,7 @@ Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-fi
 4. run `npm run pack`
 5. binaries for various platforms are compiled in `/dist`
 
-Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-file> /usr/local/bin/ufpp`
+Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-file> /usr/local/bin/utpp`
 
 #### Using node (and tsc)
 
@@ -45,9 +45,9 @@ Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-fi
 ## Usage
 
 ```
-Universal File Pre-Processor ('ufpp') is a tool for preprocessing any file
+Universal File Pre-Processor ('utpp') is a tool for preprocessing any file
 
-Usage: ufpp [options] <file> [variables]
+Usage: utpp [options] <file> [variables]
 
 Positionals:
   file, f  the file to preprocess                                       [string]
@@ -63,17 +63,17 @@ Options:
       --no-vars  disables the variables replacement   [boolean] [default: false]
 
 Examples:
-  ufpp -o out.txt input.txt    runs the preprocessor on input.txt and write
+  utpp -o out.txt input.txt    runs the preprocessor on input.txt and write
                                output to out.txt
-  ufpp input.txt foo=bar       runs the preprocessor on input.txt and sets
+  utpp input.txt foo=bar       runs the preprocessor on input.txt and sets
                                variable foo to bar
-  ufpp input.txt -m "<#" "#>"  runs the preprocessor on input.txt and write
+  utpp input.txt -m "<#" "#>"  runs the preprocessor on input.txt and write
                                output to out.txt with markers <# and #>
-  ufpp -c input.txt            validates the syntax of input.txt file
+  utpp -c input.txt            validates the syntax of input.txt file
 
-for more info and support visit https://github.com/adrianschubek/ufpp
+for more info and support visit https://github.com/adrianschubek/utpp
 ```
-> Show this help page by running `ufpp`.
+> Show this help page by running `utpp`.
 
 ### Syntax
 
@@ -116,7 +116,7 @@ c
 $[end]$
 ```
 
-Running this example with `ufpp test.txt foo=bar` will result in the following output:
+Running this example with `utpp test.txt foo=bar` will result in the following output:
 ```
 foobar
 b bar
@@ -174,7 +174,7 @@ b bar
 - [ ] no-template option
 - [ ] possibility to reference variables inside JavaScript expressions
 - [ ] include data from other files
-- [ ] support mutliple files as input and output `ufpp . --out-dir out/`
+- [ ] support mutliple files as input and output `utpp . --out-dir out/`
 
 <!-- 
 any file with 
