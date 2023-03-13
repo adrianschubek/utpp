@@ -5,7 +5,7 @@ import * as fs from "fs";
 
 const replaceBetween = (str: string, start: number, end: number, what: string) => {
   return str.substring(0, start) + what + str.substring(end);
-}
+};
 
 const variables = new Map<string, string>();
 
@@ -411,11 +411,21 @@ yargs(hideBin(process.argv))
       // replace variables ${}$ with their values
       if (!argv.noVariables) {
         data = data.replaceAll(/\$\{(.*?)\}\$/g, (match) => {
-          const variable = variables.get(match.slice(2, -2));
-          if (!variable) {
-            err(chalk.red(`Variable '${match.slice(2, -2)}' does not exist.`));
-            stop(1);
-            return match;
+          let variable: string | undefined;
+          // check if match should be eval'd
+          if (match.slice(2, -2).startsWith("`") && match.slice(2, -2).endsWith("`")) {
+            if (DISABLE_EVAL) {
+              console.log(chalk.red(`Javascript evaluation (${match}) is disabled, because option '--no-eval' is set`));
+              process.exit(1);
+            }
+            return eval(match.slice(3, -3));
+          } else {
+            variable = variables.get(match.slice(2, -2));
+            if (variable === undefined) {
+              err(chalk.red(`Variable '${match.slice(2, -2)}' does not exist.`));
+              stop(1);
+              return match;
+            }
           }
           processCmds++;
           processedBlocks++;

@@ -101,6 +101,8 @@ A command generally follows this syntax `$[<name> [arg1] [arg2] ... [argN]]$` wh
 
 A variable can be used inside a template block's *Value* by using its name. Variables are stored globally and changes to a variable can only affect statements declared **after** the current one. Outputting a variable can be done using `${<name>}$` (curly braces) where `<name>` is the variable's name.
 
+Custom JavaScript can also be outputted by using backticks. `` foo ${`2 + 2 * 5`}$. `` will output `foo 12.`.
+
 *Example: test.txt*
 ```
 foobar
@@ -170,6 +172,7 @@ b bar
 - [ ] custom markers
 - [ ] no-template option
 - [ ] include data from other files
+- [ ] support mutliple files as input and output `ufpp . --out-dir out/`
 
 <!-- 
 any file with 
