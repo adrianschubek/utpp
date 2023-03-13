@@ -75,8 +75,6 @@ for more info and support visit https://github.com/adrianschubek/ufpp
 ```
 > Show this help page by running `ufpp`.
 
-A variable can either be a `key=value` pair or just a `key`. Multiple variables can be passed as arguments by using spaces like `foo=bar foz="baz 123" foobar`.
-
 ### Syntax
 
 #### Blocks
@@ -101,6 +99,8 @@ A command generally follows this syntax `$[<name> [arg1] [arg2] ... [argN]]$` wh
 #### Variables
 
 A variable can be used inside a template block's *Value* by using its name. Variables are stored globally and changes to a variable can only affect statements declared **after** the current one. Outputting a variable can be done using `${<name>}$` (curly braces) where `<name>` is the variable's name.
+
+Variables can be declared on CLI execution using `key=value` pairs or just a `key`. Multiple variables can be passed as arguments by using spaces like `foo=bar foz="baz 123" foobar`.
 
 Custom JavaScript can also be outputted by using backticks. `` foo ${`2 + 2 * 5`}$. `` will output `foo 12.`.
 
