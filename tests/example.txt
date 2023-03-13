@@ -1,0 +1,10 @@
+Hello ${`2+2 + 9.5`}$.
+
+foobar
+$[if `1 + 2 == 4`]$
+a
+$[ifeq foo bar]$
+b ${foo}$
+$[else]$
+c
+$[end]$
