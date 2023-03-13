@@ -171,6 +171,7 @@ b bar
 ## Roadmap
 - [ ] custom markers
 - [ ] no-template option
+- [ ] possibility to reference variables inside JavaScript expressions
 - [ ] include data from other files
 - [ ] support mutliple files as input and output `ufpp . --out-dir out/`
 
