@@ -7,23 +7,39 @@
 
 </div>
 
+## Features
+- **Universal**: works with any file format
+- **Branching**: use if/else statements to include/exclude/modify parts of your file
+- **Variables**: use placeholders in your file and replace them with variables
+- **Scripting**: execute custom JavaScript code anywhere
+
 ## Use Cases
 - Dynamically modifiy static config files based on user input
-- Replace placeholder with custom eval'd JavaScript at runtime
-- Start specific service conditionally on docker run arguments. 
+- Replace placeholder with custom eval'd JavaScript on startup
+- Start a supervisor service conditionally using docker run arguments. 
+- Use different compile commands based on user's current architecture
 - and many more...
 ## Installation
 
+#### Using [npm](https://www.npmjs.com/package/utpp) (recommended)
+
+```
+npm install -g utpp
+```
+
+or if you want to test it without installing it globally:
+
+```
+npx utpp
+```
+
 #### Using Precompiled binaries
 
-Precompiled binaries for
-- Windows x64
-- Linux x64, arm64 and Alpine x64
-- MacOS x64, arm64
+Precompiled binaries for  **Linux** (x64, arm64, alpine), **Windows** (x64) and **MacOS** (x64, arm64) are published every [release](https://github.com/adrianschubek/utpp/releases).
 
-are published every [release](https://github.com/adrianschubek/utpp/releases) and are also available in [/dist](/dist/) folder.
+`Linux-alpine` binaries are designed to be used in (Alpine) docker containers.
 
-Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-file> /usr/local/bin/utpp`
+> Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-file> /usr/local/bin/utpp`
 
 #### Compile binaries yourself
 
@@ -33,7 +49,7 @@ Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-fi
 4. run `npm run pack`
 5. binaries for various platforms are compiled in `/dist`
 
-Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-file> /usr/local/bin/utpp`
+> Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-file> /usr/local/bin/utpp`
 
 #### Using node (and tsc)
 
@@ -45,7 +61,7 @@ Move the executable to `/usr/local/bin` for easier CLI access: `sudo mv <your-fi
 ## Usage
 
 ```
-Universal File Pre-Processor ('utpp') is a tool for preprocessing any file
+Universal Text Pre-Processor ('utpp') is a tool for preprocessing any file
 
 Usage: utpp [options] <file> [variables]
 
