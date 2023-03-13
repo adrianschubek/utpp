@@ -93,6 +93,7 @@ There can be any number of blocks declared in a file, but blocks **cannot** be n
 A command generally follows this syntax `$[<name> [arg1] [arg2] ... [argN]]$` where `<name>` is a [command's name](#commands-reference) `[arg]` is a [*Value*](#values). All commands return either `true` or `false`.
 
 #### Values
+- Values can reference Variables by using their name.
 - Values are treated as strings by default and cannot contain spaces.
 - Values surrounded by `"` are treated as strings and can contain spaces.
 - Values surrounded by `` ` `` (backticks) are evaluated using JavaScript's `eval` function. This means you can use any valid JavaScript expression inside.
