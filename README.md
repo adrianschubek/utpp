@@ -68,14 +68,17 @@ Positionals:
   file, f  the file to preprocess                                       [string]
 
 Options:
-      --help     Show help                                             [boolean]
-      --version  Show version number                                   [boolean]
-  -o, --output   the output file                    [string] [default: "stdout"]
-  -c, --check    checks/validates the file only       [boolean] [default: false]
-  -v, --verbose  makes the preprocessor verbose       [boolean] [default: false]
-  -q, --quiet    makes the preprocessor quiet         [boolean] [default: false]
-      --no-eval  disables the eval function           [boolean] [default: false]
-      --no-vars  disables the variables replacement   [boolean] [default: false]
+      --help         Show help                                         [boolean]
+      --version      Show version number                               [boolean]
+  -o, --output       the output file                [string] [default: "stdout"]
+  -c, --check        checks/validates the file only   [boolean] [default: false]
+  -v, --verbose      makes the preprocessor verbose   [boolean] [default: false]
+  -q, --quiet        makes the preprocessor quiet     [boolean] [default: false]
+      --no-eval      disables eval function                            [boolean]
+      --no-files     disables inclusion from files                     [boolean]
+      --no-urls      disables inclusion from urls                      [boolean]
+      --no-template  disables template replacement                     [boolean]
+      --no-vars      disables variables replacement                    [boolean]
 
 Examples:
   utpp -o out.txt input.txt    runs the preprocessor on input.txt and write
@@ -110,6 +113,10 @@ A command generally follows this syntax `$[<name> [arg1] [arg2] ... [argN]]$` wh
 - Values are treated as strings by default and cannot contain spaces.
 - Values surrounded by `"` are treated as strings and can contain spaces.
 - Values surrounded by `` ` `` (backticks) are evaluated using JavaScript's `eval` function. This means you can use any valid JavaScript expression inside.
+- Values starting with `file:` are treated as file paths and the file's content is used as the value.
+- Values starting with `url:` are treated as URLs and the URL's content is used as the value.
+- Values starting with `env:` are treated as environment variables and the environment variable's value is used as the value.
+
 
 #### Variables
 

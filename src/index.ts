@@ -115,7 +115,15 @@ import path from "path";
 
         const parseArg = async (arg: string, failOnNotFound: boolean = false): Promise<string> => {
           return new Promise(async (resolve) => {
-            if (arg.startsWith("file:")) {
+            if (arg.startsWith("env:")) {
+              // is env variable
+              const envVar = await parseArg(arg.slice(4));
+              if (process.env[envVar] === undefined) {
+                err(chalk.red(`Environment variable '${envVar}' does not exist.`));
+                return stop(1);
+              }
+              return resolve(process.env[envVar]!);
+            } else if (arg.startsWith("file:")) {
               // is file import
               const relativePath = await parseArg(arg.slice(5));
 
