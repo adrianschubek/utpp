@@ -41,6 +41,8 @@ npx utpp
 
 Precompiled binaries for  **Linux** (x64, alpine) and **Windows** (x64) are published every [release](https://github.com/adrianschubek/utpp/releases).
 
+Both compressed (.tar.gz) and uncompressed binaries are available.
+
 *Linux-alpine* binaries are designed to be used in docker containers.
 
 **MacOS** and *arm* binaries are not published yet, but you can compile them yourself (see below).
