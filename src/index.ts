@@ -497,9 +497,7 @@ import path from "path";
           // save all variables matches in array
           const variables: string[] = [];
           for (const _m of data.matchAll(/\$\{(.*?)\}\$/g)) variables.push(_m[0].trim());
-
-          log("Matches: ");
-          log(variables);
+          vlog(variables);
 
           // replace all variables in raw data with placeholder
           data = data.replaceAll(

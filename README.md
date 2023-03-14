@@ -109,22 +109,27 @@ There can be any number of blocks declared in a file, but blocks **cannot** be n
 A command generally follows this syntax `$[<name> [arg1] [arg2] ... [argN]]$` where `<name>` is a [command's name](#commands-reference) `[arg]` is a [*Value*](#values). All commands return either `true` or `false`.
 
 #### Values
-- Values can reference Variables by using their name.
-- Values are treated as strings by default and cannot contain spaces.
-- Values surrounded by `"` are treated as strings and can contain spaces.
-- Values surrounded by `` ` `` (backticks) are evaluated using JavaScript's `eval` function. This means you can use any valid JavaScript expression inside.
-- Values starting with `file:` are treated as file paths and the file's content is used as the value.
-- Values starting with `url:` are treated as URLs and the URL's content is used as the value.
-- Values starting with `env:` are treated as environment variables and the environment variable's value is used as the value.
+- Values can reference Variables by using their name (e.g. `foo` where `foo` is  variable).
+- Values are treated as strings by default and cannot contain spaces (e.g. `foobar123`).
+- Values surrounded by `"` are treated as strings and can contain spaces (e.g. `"foo bar"`).
+- Values surrounded by `` ` `` (backticks) are evaluated using JavaScript's `eval` function. This means you can use any valid JavaScript expression inside (e.g. `` `0.1 + 0.2` ``).
+- Values starting with `file:` are treated as file paths and the file's content is used as the value (e.g. `file:foo.txt` where `foo.txt` is a file relative to the preprocessed file.).
+- Values starting with `url:` are treated as URLs and the URL's content is used as the value (e.g. `url:https://myapi.com/version`).
+- Values starting with `env:` are treated as environment variables and the environment variable's value is used as the value (e.g. `env:HOME`).
 
 
 #### Variables
 
-A variable can be used inside a template block's *Value* by using its name. Variables are stored globally and changes to a variable can only affect statements declared **after** the current one. Outputting a variable can be done using `${<name>}$` (curly braces) where `<name>` is the variable's name.
+A variable can be used inside a template block's *Value* argument by using its name. Variables are stored globally and changes to a variable can only affect statements declared **after** the current one. 
 
 Variables can be declared on CLI execution using `key=value` pairs or just a `key`. Multiple variables can be passed as arguments by using spaces like `foo=bar foz="baz 123" foobar`.
 
-Custom JavaScript can also be outputted by using backticks. `` foo ${`2 + 2 * 5`}$. `` will output `foo 12.`.
+Statements ending in `s` (e.g. `ifeqs`) can set a variable when their statement evaluates to `true`. (see [reference](#commands-reference))
+
+#### Printing
+Outputting a variable can be done using `${<value>}$` (curly braces) where `<value>` is any value defined [above](#values).
+
+## Examples
 
 *Example: test.txt*
 ```
@@ -136,12 +141,34 @@ b ${foo}$
 $[else]$
 c
 $[end]$
+
+${`0.1 + 0.2`}$
+
+${file:incl.txt}$
+
+${url:https://httpbin.org/uuid}$
+
+${env:HOME}$
 ```
+*and incl.txt:* `This was included from incl.txt`
 
 Running this example with `utpp test.txt foo=bar` will result in the following output:
 ```
 foobar
+
 b bar
+
+
+0.30000000000000004
+
+This was included from incl.txt
+
+{
+  "uuid": "ba95cd1c-2bb9-4a54-a1a4-5379ce1f2fac"
+}
+
+
+/home/adrian
 ```
 
 
