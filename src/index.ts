@@ -2,174 +2,7 @@ import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 import chalk from "chalk";
 import * as fs from "fs";
-
-const replaceBetween = (str: string, start: number, end: number, what: string) => {
-  return str.substring(0, start) + what + str.substring(end);
-};
-
-const variables = new Map<string, string>();
-
-let blockId = 0;
-
-type RetType = boolean /* | "pass" */;
-
-let DISABLE_EVAL = false;
-
-const parseArg = (arg: string): string => {
-  // is javascript
-  if (arg.startsWith("`") && arg.endsWith("`")) {
-    if (DISABLE_EVAL) {
-      console.log(chalk.red(`Javascript evaluation (${arg}) is disabled, because option '--no-eval' is set`));
-      process.exit(1);
-    }
-    return eval(arg.slice(1, -1));
-    // is string
-  } else if (arg.startsWith('"') && arg.endsWith('"')) {
-    return arg.slice(1, -1);
-    // is variable
-  } else if (variables.has(arg)) {
-    return variables.get(arg)!;
-    // raw string
-  } else return arg;
-};
-
-type Command = {
-  name: string;
-  action: (args: string[]) => RetType;
-  argsCount: number;
-};
-
-const commands: Command[] = [
-  {
-    name: "if",
-    action: (args: string[]): RetType => !!parseArg(args[0]),
-    argsCount: 1,
-  },
-  {
-    name: "ifdef",
-    action: (args: string[]): RetType => variables.has(args[0]),
-    argsCount: 1,
-  },
-  {
-    name: "ifndef",
-    action: (args: string[]): RetType => !variables.has(args[0]),
-    argsCount: 1,
-  },
-  {
-    name: "ifeq",
-    action: (args: string[]): RetType => parseArg(args[0]) == parseArg(args[1]),
-    argsCount: 2,
-  },
-  {
-    name: "ifne",
-    action: (args: string[]): RetType => parseArg(args[0]) != parseArg(args[1]),
-    argsCount: 2,
-  },
-  {
-    name: "ifgt",
-    action: (args: string[]): RetType => parseArg(args[0]) > parseArg(args[1]),
-    argsCount: 2,
-  },
-  {
-    name: "iflt",
-    action: (args: string[]): RetType => parseArg(args[0]) < parseArg(args[1]),
-    argsCount: 2,
-  },
-  {
-    name: "ifge",
-    action: (args: string[]): RetType => parseArg(args[0]) >= parseArg(args[1]),
-    argsCount: 2,
-  },
-  {
-    name: "ifle",
-    action: (args: string[]): RetType => parseArg(args[0]) <= parseArg(args[1]),
-    argsCount: 2,
-  },
-  // variant: set variable
-  {
-    name: "ifs",
-    action: (args: string[]): RetType => {
-      const result = !!parseArg(args[0]);
-      if (result) variables.set(args[1], parseArg(args[2]));
-      return result;
-    },
-    argsCount: 3,
-  },
-  {
-    name: "ifdefs",
-    action: (args: string[]): RetType => {
-      const result = variables.has(args[0]);
-      if (result) variables.set(args[1], parseArg(args[2]));
-      return result;
-    },
-    argsCount: 3,
-  },
-  {
-    name: "ifeqs",
-    action: (args: string[]): RetType => {
-      const result = parseArg(args[0]) == parseArg(args[1]);
-      if (result) variables.set(args[2], parseArg(args[3]));
-      return result;
-    },
-    argsCount: 4,
-  },
-  {
-    name: "ifnes",
-    action: (args: string[]): RetType => {
-      const result = parseArg(args[0]) != parseArg(args[1]);
-      if (result) variables.set(args[2], parseArg(args[3]));
-      return result;
-    },
-    argsCount: 4,
-  },
-  {
-    name: "ifgts",
-    action: (args: string[]): RetType => {
-      const result = parseArg(args[0]) > parseArg(args[1]);
-      if (result) variables.set(args[2], parseArg(args[3]));
-      return result;
-    },
-    argsCount: 4,
-  },
-  {
-    name: "iflts",
-    action: (args: string[]): RetType => {
-      const result = parseArg(args[0]) < parseArg(args[1]);
-      if (result) variables.set(args[2], parseArg(args[3]));
-      return result;
-    },
-    argsCount: 4,
-  },
-  {
-    name: "ifges",
-    action: (args: string[]): RetType => {
-      const result = parseArg(args[0]) >= parseArg(args[1]);
-      if (result) variables.set(args[2], parseArg(args[3]));
-      return result;
-    },
-    argsCount: 4,
-  },
-  {
-    name: "ifles",
-    action: (args: string[]): RetType => {
-      const result = parseArg(args[0]) <= parseArg(args[1]);
-      if (result) variables.set(args[2], parseArg(args[3]));
-      return result;
-    },
-    argsCount: 4,
-  },
-
-  {
-    name: "else",
-    action: (args: string[]): RetType => true,
-    argsCount: 0,
-  },
-  {
-    name: "end",
-    action: (args: string[]): RetType => false,
-    argsCount: 0,
-  },
-];
+import path from "path";
 
 yargs(hideBin(process.argv))
   .scriptName("utpp")
@@ -222,24 +55,261 @@ yargs(hideBin(process.argv))
           type: "boolean",
           default: false,
         })
-        .option("no-eval", {
-          describe: "disables the eval function",
+        .option("eval", {
           type: "boolean",
-          default: false,
+          default: true,
+          hidden: true,
         })
-        /*         .option("no-template", {
-          describe: "disables the template replacement",
+        .option("no-eval", {
+          describe: "disables eval function",
           type: "boolean",
-          default: false,
-        }) */
+        })
+        .option("files", {
+          type: "boolean",
+          default: true,
+          hidden: true,
+        })
+        .option("no-files", {
+          describe: "disables inclusion from files",
+          type: "boolean",
+        })
+        .option("urls", {
+          type: "boolean",
+          default: true,
+          hidden: true,
+        })
+        .option("no-urls", {
+          describe: "disables inclusion from urls",
+          type: "boolean",
+        })
+        .option("template", {
+          type: "boolean",
+          default: true,
+          hidden: true,
+        })
+        .option("no-template", {
+          describe: "disables template replacement",
+          type: "boolean",
+        })
+        .option("vars", {
+          type: "boolean",
+          default: true,
+          hidden: true,
+        })
         .option("no-vars", {
-          describe: "disables the variables replacement",
+          describe: "disables variables replacement",
           type: "boolean",
-          default: false,
         });
-      // .parserConfiguration({ "unknown-options-as-args": true });
     },
     (argv: any) => {
+      const replaceBetween = (str: string, start: number, end: number, what: string) => {
+        return str.substring(0, start) + what + str.substring(end);
+      };
+
+      const variables = new Map<string, string>();
+
+      let blockId = 0;
+
+      type RetType = boolean /* | "pass" */;
+
+      const parseArg = (arg: string, failOnNotFound: boolean = false): string => {
+        if (arg.startsWith("file:")) {
+          // is file import
+          const relativePath = parseArg(arg.slice(5));
+
+          if (!argv.files) {
+            console.log(chalk.red(`Unable to import file '${relativePath}' because option '--no-files' is set`));
+            stop(1);
+          }
+
+          const fullPath = path.resolve(path.dirname(argv.file) + path.sep + relativePath);
+          if (!fs.existsSync(fullPath)) {
+            err(chalk.red(`File '${fullPath}' does not exist. Make sure that '${relativePath}' is relative to '${path.dirname(argv.file)}' folder.`));
+            stop(1);
+          }
+
+          return fs.readFileSync(fullPath, "utf-8");
+        } else if (arg.startsWith("url:")) {
+          // is url import
+          const url = parseArg(arg.slice(4));
+
+          if (!argv.urls) {
+            console.log(chalk.red(`Unable to import URL '${url}' because option '--no-urls' is set`));
+            stop(1);
+          }
+          return "";
+          /* try {
+            const response = await fetch(url);
+            if (response.status !== 200) {
+              err(chalk.red(`Unable to import URL '${url}' because it returned status code ${response.status}.`));
+              stop(1);
+            }
+            return await response.text();
+          } catch (e) {
+            err(chalk.red(`Unable to import URL '${url}' because of error: ${e.message}`));
+            stop(1);
+          } */
+        } else if (arg.startsWith("`") && arg.endsWith("`")) {
+          // is javascript
+          if (!argv.eval) {
+            console.log(chalk.red(`JavaScript evaluation \`${arg}\` is disabled, because option '--no-eval' is set`));
+            process.exit(1);
+          }
+          return eval(arg.slice(1, -1));
+          // is string
+        } else if (arg.startsWith('"') && arg.endsWith('"')) {
+          return arg.slice(1, -1);
+          // is variable
+        } else if (variables.has(arg)) {
+          return variables.get(arg)!;
+          // raw string
+        } else {
+          if (failOnNotFound) {
+            console.log(chalk.red(`Variable '${arg}' is not defined`));
+            stop(1);
+          }
+          return arg;
+        }
+      };
+
+      type Command = {
+        name: string;
+        action: (args: string[]) => RetType;
+        argsCount: number;
+      };
+
+      const commands: Command[] = [
+        {
+          name: "if",
+          action: (args: string[]): RetType => !!parseArg(args[0]),
+          argsCount: 1,
+        },
+        {
+          name: "ifdef",
+          action: (args: string[]): RetType => variables.has(args[0]),
+          argsCount: 1,
+        },
+        {
+          name: "ifndef",
+          action: (args: string[]): RetType => !variables.has(args[0]),
+          argsCount: 1,
+        },
+        {
+          name: "ifeq",
+          action: (args: string[]): RetType => parseArg(args[0]) == parseArg(args[1]),
+          argsCount: 2,
+        },
+        {
+          name: "ifne",
+          action: (args: string[]): RetType => parseArg(args[0]) != parseArg(args[1]),
+          argsCount: 2,
+        },
+        {
+          name: "ifgt",
+          action: (args: string[]): RetType => parseArg(args[0]) > parseArg(args[1]),
+          argsCount: 2,
+        },
+        {
+          name: "iflt",
+          action: (args: string[]): RetType => parseArg(args[0]) < parseArg(args[1]),
+          argsCount: 2,
+        },
+        {
+          name: "ifge",
+          action: (args: string[]): RetType => parseArg(args[0]) >= parseArg(args[1]),
+          argsCount: 2,
+        },
+        {
+          name: "ifle",
+          action: (args: string[]): RetType => parseArg(args[0]) <= parseArg(args[1]),
+          argsCount: 2,
+        },
+        // variant: set variable
+        {
+          name: "ifs",
+          action: (args: string[]): RetType => {
+            const result = !!parseArg(args[0]);
+            if (result) variables.set(args[1], parseArg(args[2]));
+            return result;
+          },
+          argsCount: 3,
+        },
+        {
+          name: "ifdefs",
+          action: (args: string[]): RetType => {
+            const result = variables.has(args[0]);
+            if (result) variables.set(args[1], parseArg(args[2]));
+            return result;
+          },
+          argsCount: 3,
+        },
+        {
+          name: "ifeqs",
+          action: (args: string[]): RetType => {
+            const result = parseArg(args[0]) == parseArg(args[1]);
+            if (result) variables.set(args[2], parseArg(args[3]));
+            return result;
+          },
+          argsCount: 4,
+        },
+        {
+          name: "ifnes",
+          action: (args: string[]): RetType => {
+            const result = parseArg(args[0]) != parseArg(args[1]);
+            if (result) variables.set(args[2], parseArg(args[3]));
+            return result;
+          },
+          argsCount: 4,
+        },
+        {
+          name: "ifgts",
+          action: (args: string[]): RetType => {
+            const result = parseArg(args[0]) > parseArg(args[1]);
+            if (result) variables.set(args[2], parseArg(args[3]));
+            return result;
+          },
+          argsCount: 4,
+        },
+        {
+          name: "iflts",
+          action: (args: string[]): RetType => {
+            const result = parseArg(args[0]) < parseArg(args[1]);
+            if (result) variables.set(args[2], parseArg(args[3]));
+            return result;
+          },
+          argsCount: 4,
+        },
+        {
+          name: "ifges",
+          action: (args: string[]): RetType => {
+            const result = parseArg(args[0]) >= parseArg(args[1]);
+            if (result) variables.set(args[2], parseArg(args[3]));
+            return result;
+          },
+          argsCount: 4,
+        },
+        {
+          name: "ifles",
+          action: (args: string[]): RetType => {
+            const result = parseArg(args[0]) <= parseArg(args[1]);
+            if (result) variables.set(args[2], parseArg(args[3]));
+            return result;
+          },
+          argsCount: 4,
+        },
+
+        {
+          name: "else",
+          action: (args: string[]): RetType => true,
+          argsCount: 0,
+        },
+        {
+          name: "end",
+          action: (args: string[]): RetType => false,
+          argsCount: 0,
+        },
+      ];
+
       // default log
       const log = (message?: any, ...optionalParams: any[]) => {
         if (!argv.quiet) console.log(message, ...optionalParams);
@@ -282,154 +352,141 @@ yargs(hideBin(process.argv))
       // raw file data
       let data = fs.readFileSync(argv.file, "utf-8").toString();
 
-      const blockMatches = data.matchAll(/(\$\[(.*?)\]\$)([\w\W]*?)(\$\[end\]\$)/g) || [];
-
       let processCmds = 0;
       let processedBlocks = 0;
-      for (const block of blockMatches) {
-        processedBlocks++;
-        blockId++;
-        vlog(">> NEXT BLOCK ");
-        const matches = block[0].matchAll(/\$\[(.*?)\]\$/g);
 
-        // block index in main raw data
-        const startIndexMain = data.indexOf(block[0]);
-        const endIndexMain = startIndexMain + block[0].length;
+      if (argv.template) {
+        const blockMatches = data.matchAll(/(\$\[(.*?)\]\$)([\w\W]*?)(\$\[end\]\$)/g) || [];
 
-        let templateText = block[0].replaceAll(
-          /\$\[(.*?)\]\$/g,
-          (() => {
-            let number = 0;
-            return () => {
-              return "$$" + blockId + ":" + number++ + "$$";
-            };
-          })()
-        );
-        vlog(templateText);
+        for (const block of blockMatches) {
+          processedBlocks++;
+          blockId++;
+          vlog(">> NEXT BLOCK ");
+          const matches = block[0].matchAll(/\$\[(.*?)\]\$/g);
 
-        /*  später dann $$1$$ bis $$2$$  replace 1...2 */
+          // block index in main raw data
+          const startIndexMain = data.indexOf(block[0]);
+          const endIndexMain = startIndexMain + block[0].length;
 
-        // log(block);
+          let templateText = block[0].replaceAll(
+            /\$\[(.*?)\]\$/g,
+            (() => {
+              let number = 0;
+              return () => {
+                return "$$" + blockId + ":" + number++ + "$$";
+              };
+            })()
+          );
+          vlog(templateText);
 
-        let numElse = 0,
-          numEnd = 0,
-          cmdId = -1,
-          trueCmdId = -1;
-        const blockCommands = [];
-        // validate command matches
-        for (const match of matches) {
-          cmdId++;
-          //  split by space or quotes [^\s"`]+|"([^"]*)"|`([^`]*)`
-          // parse args
-          const cmdArgs: string[] = [];
-          for (const _m of match[1].trim().matchAll(/[^\s"`]+|"([^"]*)"|`([^`]*)`/g)) cmdArgs.push(_m[0].trim());
-          blockCommands.push(cmdArgs);
-          vlog(cmdArgs);
+          /*  später dann $$1$$ bis $$2$$  replace 1...2 */
 
-          const command = commands.find((c) => c.name === cmdArgs[0].trim());
-          if (!command) {
-            err(chalk.red(`Command '${cmdArgs[0]}' does not exist.`));
+          // log(block);
+
+          let numElse = 0,
+            numEnd = 0,
+            cmdId = -1,
+            trueCmdId = -1;
+          const blockCommands = [];
+          // validate command matches
+          for (const match of matches) {
+            cmdId++;
+            //  split by space or quotes [^\s"`]+|"([^"]*)"|`([^`]*)`
+            // parse args
+            const cmdArgs: string[] = [];
+            for (const _m of match[1].trim().matchAll(/[^\s"`]+|"([^"]*)"|`([^`]*)`/g)) cmdArgs.push(_m[0].trim());
+            blockCommands.push(cmdArgs);
+            vlog(cmdArgs);
+
+            const command = commands.find((c) => c.name === cmdArgs[0].trim());
+            if (!command) {
+              err(chalk.red(`Command '${cmdArgs[0]}' does not exist.`));
+              stop(1);
+              process.exit(1); /* to fix typescirpt error incorrectly assuming command can still be undefined afterwards */
+            }
+
+            // check if command arguments count is correct
+            if (command.argsCount !== cmdArgs.length - 1) {
+              err(chalk.red(`Command '${command.name}' expects ${command.argsCount} arguments but got ${cmdArgs.length - 1}.`));
+              stop(1);
+            }
+
+            if (command.name === "end") ++numEnd;
+            if (command.name === "else") ++numElse;
+            processCmds++;
+
+            // evaluate command and return of first 'true' command
+            const result = command.action(cmdArgs.slice(1));
+            vlog(result);
+
+            // save first true command
+            if (result && trueCmdId === -1) {
+              // replace template all 0..4 mit between  1..2 zB
+              trueCmdId = cmdId;
+              vlog("True command ID: " + cmdId);
+            }
+          }
+
+          // check if end is used more than once
+          if (numEnd > 1) {
+            err(chalk.red(`Command 'end' can only be used once per block but found ${numEnd} times.`));
             stop(1);
-            process.exit(1); /* to fix typescirpt error incorrectly assuming command can still be undefined afterwards */
           }
 
-          // check if command arguments count is correct
-          if (command.argsCount !== cmdArgs.length - 1) {
-            err(chalk.red(`Command '${command.name}' expects ${command.argsCount} arguments but got ${cmdArgs.length - 1}.`));
+          // check if else is used more than once
+          if (numElse > 1) {
+            err(chalk.red(`Command 'else' can only be used once per block but found ${numElse} times.`));
             stop(1);
           }
 
-          if (command.name === "end") ++numEnd;
-          if (command.name === "else") ++numElse;
-          processCmds++;
-
-          // evaluate command and return of first 'true' command
-          const result = command.action(cmdArgs.slice(1));
-          vlog(result);
-
-          // save first true command
-          if (result && trueCmdId === -1) {
-            // replace template all 0..4 mit between  1..2 zB
-            trueCmdId = cmdId;
-            vlog("True command ID: " + cmdId);
+          // check if else is used without if
+          if (numElse !== 0 && !blockCommands.find((c) => c[0].startsWith("if"))) {
+            err(chalk.red(`Command 'else' can only be used after 'if' command. Nested statements are not supported.`));
+            stop(1);
           }
+
+          // check if else is second last command
+          if (blockCommands.find((c) => c[0] === "else") && blockCommands[blockCommands.length - 2][0] !== "else") {
+            err(chalk.red(`Command 'else' must be the last command in a block before 'end'. Nested statements are not supported.`));
+            stop(1);
+          }
+
+          // true command exist so set template text to content of true command (raw text between trueCmdId and trueCmdId+1)
+          if (trueCmdId !== -1) {
+            // Example: trueCmdId = 0
+            // before  => $$0:0$$ foo $$0:1$$ bar $$0:2$$
+            // after   => foo
+            const startIndexLength = ("$$" + blockId + ":" + trueCmdId + "$$").length;
+            const startIndex = templateText.indexOf("$$" + blockId + ":" + trueCmdId + "$$") + startIndexLength;
+            const endIndex = templateText.indexOf("$$" + blockId + ":" + (trueCmdId + 1) + "$$");
+            templateText = templateText.substring(startIndex, endIndex);
+          } else {
+            // no true command, so remove completly
+            templateText = "";
+          }
+          // replace raw data with templated data
+          data = replaceBetween(data, startIndexMain, endIndexMain, templateText);
         }
 
-        // check if end is used more than once
-        if (numEnd > 1) {
-          err(chalk.red(`Command 'end' can only be used once per block but found ${numEnd} times.`));
+        // check if there are still unmatched commands left
+        const unmatchedCommands = data.matchAll(/\$\[(.*?)\]\$/g);
+        let numUnmatched = 0;
+        for (const match of unmatchedCommands) {
+          numUnmatched++;
+          err(chalk.red(`Command '${match[0]}' found but it is not part of any block.`));
+        }
+        if (numUnmatched > 0) {
+          err(chalk.red(`Found ${numUnmatched} unmatched commands. Please check your syntax.`));
           stop(1);
         }
-
-        // check if else is used more than once
-        if (numElse > 1) {
-          err(chalk.red(`Command 'else' can only be used once per block but found ${numElse} times.`));
-          stop(1);
-        }
-
-        // check if else is used without if
-        if (numElse !== 0 && !blockCommands.find((c) => c[0].startsWith("if"))) {
-          err(chalk.red(`Command 'else' can only be used after 'if' command. Nested statements are not supported.`));
-          stop(1);
-        }
-
-        // check if else is second last command
-        if (blockCommands.find((c) => c[0] === "else") && blockCommands[blockCommands.length - 2][0] !== "else") {
-          err(chalk.red(`Command 'else' must be the last command in a block before 'end'. Nested statements are not supported.`));
-          stop(1);
-        }
-
-        // true command exist so set template text to content of true command (raw text between trueCmdId and trueCmdId+1)
-        if (trueCmdId !== -1) {
-          // Example: trueCmdId = 0
-          // before  => $$0:0$$ foo $$0:1$$ bar $$0:2$$
-          // after   => foo
-          const startIndexLength = ("$$" + blockId + ":" + trueCmdId + "$$").length;
-          const startIndex = templateText.indexOf("$$" + blockId + ":" + trueCmdId + "$$") + startIndexLength;
-          const endIndex = templateText.indexOf("$$" + blockId + ":" + (trueCmdId + 1) + "$$");
-          templateText = templateText.substring(startIndex, endIndex);
-        } else {
-          // no true command, so remove completly
-          templateText = "";
-        }
-        // replace raw data with templated data
-        data = replaceBetween(data, startIndexMain, endIndexMain, templateText);
-      }
-
-      // check if there are still unmatched commands left
-      const unmatchedCommands = data.matchAll(/\$\[(.*?)\]\$/g);
-      let numUnmatched = 0;
-      for (const match of unmatchedCommands) {
-        numUnmatched++;
-        err(chalk.red(`Command '${match[0]}' found but it is not part of any block.`));
-      }
-      if (numUnmatched > 0) {
-        err(chalk.red(`Found ${numUnmatched} unmatched commands. Please check your syntax.`));
-        stop(1);
       }
 
       // replace variables ${}$ with their values
-      if (!argv.noVariables) {
+      if (argv.vars) {
         data = data.replaceAll(/\$\{(.*?)\}\$/g, (match) => {
-          let variable: string | undefined;
-          // check if match should be eval'd
-          if (match.slice(2, -2).startsWith("`") && match.slice(2, -2).endsWith("`")) {
-            if (DISABLE_EVAL) {
-              console.log(chalk.red(`Javascript evaluation (${match}) is disabled, because option '--no-eval' is set`));
-              process.exit(1);
-            }
-            return eval(match.slice(3, -3));
-          } else {
-            variable = variables.get(match.slice(2, -2));
-            if (variable === undefined) {
-              err(chalk.red(`Variable '${match.slice(2, -2)}' does not exist.`));
-              stop(1);
-              return match;
-            }
-          }
           processCmds++;
           processedBlocks++;
-          return variable;
+          return parseArg(match.slice(2, -2), true);
         });
       }
 

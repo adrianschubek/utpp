@@ -185,10 +185,11 @@ b bar
 `end` - used to end a block.
 
 ## Roadmap
+- [x] no-template option
+- [x] include data from other files
+- [x] include data from urls
 - [ ] custom markers
-- [ ] no-template option
 - [ ] possibility to reference variables inside JavaScript expressions
-- [ ] include data from other files
 - [ ] support mutliple files as input and output `utpp . --out-dir out/`
 
 ## Development
