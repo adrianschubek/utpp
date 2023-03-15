@@ -390,10 +390,6 @@ import path from "path";
             );
             vlog(templateText);
 
-            /*  später dann $$1$$ bis $$2$$  replace 1...2 */
-
-            // log(block);
-
             let numElse = 0,
               numEnd = 0,
               cmdId = -1,
