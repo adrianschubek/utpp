@@ -16,3 +16,7 @@ ${{file:incl.txt}}$
 ${{url:https://example.com}}$
 
 ${{env:HOME}}$
+
+$[if false]$
+awdwad
+$[end]$

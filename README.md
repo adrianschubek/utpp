@@ -148,7 +148,7 @@ ${{`0.1 + 0.2`}}$
 
 ${{file:incl.txt}}$
 
-${{url:https://example.com}}$
+${{url:https://httpbin.org/uuid}}$
 
 ${{env:HOME}}$
 ```
