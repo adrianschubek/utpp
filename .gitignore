@@ -4,3 +4,4 @@
 /.vscode
 /dist
 /bin/index.js
+/coverage
