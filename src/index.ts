@@ -422,7 +422,7 @@ process.emit = function (name, data: any, ...args) {
                 (() => {
                   let number = 0;
                   return () => {
-                    return "$$" + blockId + ":" + number++ + "$$";
+                    return "$%$" + blockId + ":" + number++ + "$%$";
                   };
                 })()
               );
@@ -499,9 +499,9 @@ process.emit = function (name, data: any, ...args) {
                 // Example: trueCmdId = 0
                 // before  => $$0:0$$ foo $$0:1$$ bar $$0:2$$
                 // after   => foo
-                const startIndexLength = ("$$" + blockId + ":" + trueCmdId + "$$").length;
-                const startIndex = templateText.indexOf("$$" + blockId + ":" + trueCmdId + "$$") + startIndexLength;
-                const endIndex = templateText.indexOf("$$" + blockId + ":" + (trueCmdId + 1) + "$$");
+                const startIndexLength = ("$%$" + blockId + ":" + trueCmdId + "$%$").length;
+                const startIndex = templateText.indexOf("$%$" + blockId + ":" + trueCmdId + "$%$") + startIndexLength;
+                const endIndex = templateText.indexOf("$%$" + blockId + ":" + (trueCmdId + 1) + "$%$");
                 templateText = templateText.substring(startIndex, endIndex);
               } else {
                 // no true command, so remove completly
@@ -539,7 +539,7 @@ process.emit = function (name, data: any, ...args) {
                 let number = 0;
                 return () => {
                   processVars++;
-                  return "$$var:" + number++ + "$$";
+                  return "$%$var:" + number++ + "$%$";
                 };
               })()
             );
@@ -550,9 +550,9 @@ process.emit = function (name, data: any, ...args) {
             }
 
             // replace all placeholders with variable values
-            let varCtr = 0;
-            data = data.replaceAll(/\$\$(.*?)\$\$/g, () => {
-              return variables[varCtr++];
+            data = data.replaceAll(/\$\%\$(.*?)\$\%\$/g, (match) => {
+              // $%$var:123$%$ => 123
+              return variables[+match.slice(7, -3)];
             });
           }
 
