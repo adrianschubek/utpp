@@ -222,9 +222,9 @@ This was included from incl.txt
 - [x] no-template option
 - [x] include data from other files
 - [x] include data from urls
+- [x] support mutliple files as input
 - [ ] custom markers
 - [ ] possibility to reference variables inside JavaScript expressions
-- [ ] support mutliple files as input and output `utpp . --out-dir out/`
 
 ## Development
 

@@ -3,58 +3,73 @@ import { hideBin } from "yargs/helpers";
 import chalk from "chalk";
 import * as fs from "fs";
 import path from "path";
+import glob from "glob";
+
+// supress Fetch API experimental warning
+const originalEmit = process.emit;
+// @ts-expect-error - TS complains about the return type of originalEmit.apply
+process.emit = function (name, data: any, ...args) {
+  if (name === `warning` && typeof data === `object` && data.name === `ExperimentalWarning` && data.message.includes(`Fetch API`)) {
+    return false;
+  }
+  return originalEmit.apply(process, arguments as any);
+};
 
 (async () =>
   await yargs(hideBin(process.argv))
     .scriptName("utpp")
-    .usage("Universal Text Pre-Processor ('utpp') is a tool for preprocessing any file\n")
-    .usage("Usage: $0 [options] <file> [variables]")
+    .usage(chalk.cyan("Universal Text Pre-Processor ('utpp') is a tool for preprocessing any file\n"))
+    .usage("Usage: $0 [options] <files> [variables]")
     .epilogue("for more info and support visit https://github.com/adrianschubek/utpp")
     .version()
     .example("utpp -o out.txt input.txt", "runs the preprocessor on input.txt and write output to out.txt")
     .example("utpp input.txt foo=bar", "runs the preprocessor on input.txt and sets variable foo to bar")
-    .example('utpp input.txt -m "<#" "#>"', "runs the preprocessor on input.txt and write output to out.txt with markers <# and #>")
     .example("utpp -c input.txt", "validates the syntax of input.txt file")
     .command(
       ["run <file>", "$0"],
       "runs the preprocessor",
       (builder) => {
         builder
-          .positional("file", {
+          .positional("files", {
             alias: "f",
-            describe: "the file to preprocess",
+            describe: "files to preprocess (glob pattern)",
             type: "string",
             demandOption: true,
           })
           .option("output", {
             alias: "o",
-            describe: "the output file",
-            default: "stdout",
+            describe: "write to output file",
             type: "string",
+            conflicts: "print",
           })
-          /*    .option("markers", {
-          alias: "m",
-          describe: "set markers for preprocessor",
-          type: "array",
-          default: ["$[", "]$"],
-        }) */
           .option("check", {
             alias: "c",
-            describe: "checks/validates the file only",
+            describe: "checks the file's syntax only",
             type: "boolean",
             default: false,
           })
           .option("verbose", {
             alias: "v",
-            describe: "makes the preprocessor verbose",
+            describe: "show more debug logs",
             type: "boolean",
             default: false,
+          })
+          .option("print", {
+            alias: "p",
+            describe: "prints the output to stdout instead of files",
+            type: "boolean",
+            conflicts: "output",
           })
           .option("quiet", {
             alias: "q",
             describe: "makes the preprocessor quiet",
             type: "boolean",
             default: false,
+          })
+          .option("ignore", {
+            describe: "glob pattern to ignore files",
+            type: "string",
+            default: "",
           })
           .option("eval", {
             type: "boolean",
@@ -111,7 +126,10 @@ import path from "path";
 
         let blockId = 0;
 
-        type RetType = boolean /* | "pass" */;
+        type RetType = boolean;
+
+        // for parseArg relative file includes
+        let currentFilename = "";
 
         const parseArg = async (arg: string, failOnNotFound: boolean = false): Promise<string> => {
           return new Promise(async (resolve) => {
@@ -132,7 +150,7 @@ import path from "path";
                 stop(1);
               }
 
-              const fullPath = path.resolve(path.dirname(argv.file) + path.sep + relativePath);
+              const fullPath = path.resolve(path.dirname(currentFilename) + path.sep + relativePath);
               if (!fs.existsSync(fullPath)) {
                 err(
                   chalk.red(`File '${fullPath}' does not exist. Make sure that '${relativePath}' is relative to '${path.dirname(argv.file)}' folder.`)
@@ -164,7 +182,7 @@ import path from "path";
               // is javascript
               if (!argv.eval) {
                 console.log(chalk.red(`JavaScript evaluation \`${arg}\` is disabled, because option '--no-eval' is set`));
-                process.exit(1);
+                stop(1);
               }
               return resolve(eval(arg.slice(1, -1)));
               // is string
@@ -177,7 +195,7 @@ import path from "path";
             } else {
               if (failOnNotFound) {
                 console.log(chalk.red(`Variable '${arg}' is not defined`));
-                return stop(1);
+                stop(1);
               } else return resolve(arg);
             }
           });
@@ -336,7 +354,7 @@ import path from "path";
           if (argv.verbose) log(message, ...optionalParams);
         };
 
-        const stop = (exitCode: number = 0): never => {
+        const stop = (exitCode: number = 0): never | void => {
           if (exitCode !== 0 && !argv.verbose) {
             log(chalk.grey("Turn on verbose mode for more info (-v)"));
           }
@@ -351,193 +369,216 @@ import path from "path";
         }
 
         if (argv.file === undefined) {
-          err(chalk.red("No file specified."));
+          err(chalk.red("No file(s) specified."));
           stop(1);
         }
 
-        if (!fs.existsSync(argv.file)) {
-          err(chalk.red(`File '${argv.file}' does not exist.`));
+        const files = await glob((argv.file ?? []).split(","), { absolute: false, nodir: true, dot: true, ignore: (argv.ignore ?? []).split(",") });
+
+        // check if there are any files
+        if (files.length === 0) {
+          err(chalk.red(`No files found for '${argv.file}'`));
           stop(1);
         }
 
-        // raw file data
-        let data = fs.readFileSync(argv.file, "utf-8").toString();
+        // don't write to putput file if there are multiple input files
+        if (files.length > 1 && argv.output) {
+          err(
+            chalk.red(
+              `${files.length} input files found, cannot write to single output file.\nBy default (without '-o'), output is written to their respective original files.`
+            )
+          );
+          stop(1);
+        }
 
-        let processCmds = 0;
-        let processedBlocks = 0;
+        vlog("Arguments", argv);
+        vlog("Files", files);
 
-        if (argv.template) {
-          const blockMatches = data.matchAll(/(\$\[(.*?)\]\$)([\w\W]*?)(\$\[end\]\$)/g) || [];
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          currentFilename = file;
+          vlog(`Processing file ${i + 1}/${files.length}: ${file}`);
 
-          for (const block of blockMatches) {
-            processedBlocks++;
-            blockId++;
-            vlog(">> NEXT BLOCK ");
-            const matches = block[0].matchAll(/\$\[(.*?)\]\$/g);
+          // raw file data
+          let data = fs.readFileSync(file, "utf-8").toString();
 
-            // block index in main raw data
-            const startIndexMain = data.indexOf(block[0]);
-            const endIndexMain = startIndexMain + block[0].length;
+          let processedBlocks = 0;
 
-            let templateText = block[0].replaceAll(
-              /\$\[(.*?)\]\$/g,
+          if (argv.template) {
+            const blockMatches = data.matchAll(/(\$\[(.*?)\]\$)([\w\W]*?)(\$\[end\]\$)/g) || [];
+
+            for (const block of blockMatches) {
+              processedBlocks++;
+              blockId++;
+              vlog(">> NEXT BLOCK ");
+              const matches = block[0].matchAll(/\$\[(.*?)\]\$/g);
+
+              // block index in main raw data
+              const startIndexMain = data.indexOf(block[0]);
+              const endIndexMain = startIndexMain + block[0].length;
+
+              let templateText = block[0].replaceAll(
+                /\$\[(.*?)\]\$/g,
+                (() => {
+                  let number = 0;
+                  return () => {
+                    return "$$" + blockId + ":" + number++ + "$$";
+                  };
+                })()
+              );
+              vlog(templateText);
+
+              let numElse = 0,
+                numEnd = 0,
+                cmdId = -1,
+                trueCmdId = -1;
+              const blockCommands = [];
+              // validate command matches
+              for (const match of matches) {
+                cmdId++;
+                //  split by space or quotes [^\s"`]+|"([^"]*)"|`([^`]*)`
+                // parse args
+                const cmdArgs: string[] = [];
+                for (const _m of match[1].trim().matchAll(/[^\s"`]+|"([^"]*)"|`([^`]*)`/g)) cmdArgs.push(_m[0].trim());
+                blockCommands.push(cmdArgs);
+                vlog(cmdArgs);
+
+                const command = commands.find((c) => c.name === cmdArgs[0].trim());
+                if (!command) {
+                  err(chalk.red(`Command '${cmdArgs[0]}' does not exist.`));
+                  stop(1);
+                  continue;
+                }
+
+                // check if command arguments count is correct
+                if (command.argsCount !== cmdArgs.length - 1) {
+                  err(chalk.red(`Command '${command.name}' expects ${command.argsCount} arguments but got ${cmdArgs.length - 1}.`));
+                  stop(1);
+                }
+
+                if (command.name === "end") ++numEnd;
+                if (command.name === "else") ++numElse;
+
+                // evaluate command and return of first 'true' command
+                const result = await command!.action(cmdArgs.slice(1));
+                vlog(result);
+
+                // save first truthy command
+                if (result && trueCmdId === -1) {
+                  trueCmdId = cmdId;
+                  vlog("True command ID: " + cmdId);
+                }
+              }
+
+              // check if end is used more than once
+              if (numEnd > 1) {
+                err(chalk.red(`Command 'end' can only be used once per block but found ${numEnd} times.`));
+                stop(1);
+              }
+
+              // check if else is used more than once
+              if (numElse > 1) {
+                err(chalk.red(`Command 'else' can only be used once per block but found ${numElse} times.`));
+                stop(1);
+              }
+
+              // check if else is used without if
+              if (numElse !== 0 && !blockCommands.find((c) => c[0].startsWith("if"))) {
+                err(chalk.red(`Command 'else' can only be used after 'if' command. Nested statements are not supported.`));
+                stop(1);
+              }
+
+              // check if else is second last command
+              if (blockCommands.find((c) => c[0] === "else") && blockCommands[blockCommands.length - 2][0] !== "else") {
+                err(chalk.red(`Command 'else' must be the last command in a block before 'end'. Nested statements are not supported.`));
+                stop(1);
+              }
+
+              // true command exist so set template text to content of true command (raw text between trueCmdId and trueCmdId+1)
+              if (trueCmdId !== -1) {
+                // Example: trueCmdId = 0
+                // before  => $$0:0$$ foo $$0:1$$ bar $$0:2$$
+                // after   => foo
+                const startIndexLength = ("$$" + blockId + ":" + trueCmdId + "$$").length;
+                const startIndex = templateText.indexOf("$$" + blockId + ":" + trueCmdId + "$$") + startIndexLength;
+                const endIndex = templateText.indexOf("$$" + blockId + ":" + (trueCmdId + 1) + "$$");
+                templateText = templateText.substring(startIndex, endIndex);
+              } else {
+                // no true command, so remove completly
+                templateText = "";
+              }
+              // replace raw data with templated data
+              data = replaceBetween(data, startIndexMain, endIndexMain, templateText);
+            }
+
+            // check if there are still unmatched commands left
+            const unmatchedCommands = data.matchAll(/\$\[(.*?)\]\$/g);
+            let numUnmatched = 0;
+            for (const match of unmatchedCommands) {
+              numUnmatched++;
+              err(chalk.red(`Command '${match[0]}' found but it is not part of any block.`));
+            }
+            if (numUnmatched > 0) {
+              err(chalk.red(`Found ${numUnmatched} unmatched commands. Please check your syntax.`));
+              stop(1);
+            }
+          }
+
+          let processVars = 0;
+          // replace variables ${}$ with their values
+          if (argv.vars) {
+            // save all variables matches in array
+            const variables: string[] = [];
+            for (const _m of data.matchAll(/\$\{(.*?)\}\$/g)) variables.push(_m[0].trim());
+            vlog(variables);
+
+            // replace all variables in raw data with placeholder
+            data = data.replaceAll(
+              /\$\{(.*?)\}\$/g,
               (() => {
                 let number = 0;
                 return () => {
-                  return "$$" + blockId + ":" + number++ + "$$";
+                  processVars++;
+                  return "$$var:" + number++ + "$$";
                 };
               })()
             );
-            vlog(templateText);
 
-            let numElse = 0,
-              numEnd = 0,
-              cmdId = -1,
-              trueCmdId = -1;
-            const blockCommands = [];
-            // validate command matches
-            for (const match of matches) {
-              cmdId++;
-              //  split by space or quotes [^\s"`]+|"([^"]*)"|`([^`]*)`
-              // parse args
-              const cmdArgs: string[] = [];
-              for (const _m of match[1].trim().matchAll(/[^\s"`]+|"([^"]*)"|`([^`]*)`/g)) cmdArgs.push(_m[0].trim());
-              blockCommands.push(cmdArgs);
-              vlog(cmdArgs);
-
-              const command = commands.find((c) => c.name === cmdArgs[0].trim());
-              if (!command) {
-                err(chalk.red(`Command '${cmdArgs[0]}' does not exist.`));
-                stop(1);
-                process.exit(1); /* to fix typescirpt error incorrectly assuming command can still be undefined afterwards */
-              }
-
-              // check if command arguments count is correct
-              if (command.argsCount !== cmdArgs.length - 1) {
-                err(chalk.red(`Command '${command.name}' expects ${command.argsCount} arguments but got ${cmdArgs.length - 1}.`));
-                stop(1);
-              }
-
-              if (command.name === "end") ++numEnd;
-              if (command.name === "else") ++numElse;
-              processCmds++;
-
-              // evaluate command and return of first 'true' command
-              const result = await command.action(cmdArgs.slice(1));
-              vlog(result);
-
-              // save first true command
-              if (result && trueCmdId === -1) {
-                // replace template all 0..4 mit between  1..2 zB
-                trueCmdId = cmdId;
-                vlog("True command ID: " + cmdId);
-              }
+            // foreach variable match: parse
+            for (let i = 0; i < variables.length; i++) {
+              variables[i] = await parseArg(variables[i].slice(2, -2), true);
             }
 
-            // check if end is used more than once
-            if (numEnd > 1) {
-              err(chalk.red(`Command 'end' can only be used once per block but found ${numEnd} times.`));
-              stop(1);
-            }
+            // replace all placeholders with variable values
+            let varCtr = 0;
+            data = data.replaceAll(/\$\$(.*?)\$\$/g, () => {
+              return variables[varCtr++];
+            });
+          }
 
-            // check if else is used more than once
-            if (numElse > 1) {
-              err(chalk.red(`Command 'else' can only be used once per block but found ${numElse} times.`));
-              stop(1);
-            }
-
-            // check if else is used without if
-            if (numElse !== 0 && !blockCommands.find((c) => c[0].startsWith("if"))) {
-              err(chalk.red(`Command 'else' can only be used after 'if' command. Nested statements are not supported.`));
-              stop(1);
-            }
-
-            // check if else is second last command
-            if (blockCommands.find((c) => c[0] === "else") && blockCommands[blockCommands.length - 2][0] !== "else") {
-              err(chalk.red(`Command 'else' must be the last command in a block before 'end'. Nested statements are not supported.`));
-              stop(1);
-            }
-
-            // true command exist so set template text to content of true command (raw text between trueCmdId and trueCmdId+1)
-            if (trueCmdId !== -1) {
-              // Example: trueCmdId = 0
-              // before  => $$0:0$$ foo $$0:1$$ bar $$0:2$$
-              // after   => foo
-              const startIndexLength = ("$$" + blockId + ":" + trueCmdId + "$$").length;
-              const startIndex = templateText.indexOf("$$" + blockId + ":" + trueCmdId + "$$") + startIndexLength;
-              const endIndex = templateText.indexOf("$$" + blockId + ":" + (trueCmdId + 1) + "$$");
-              templateText = templateText.substring(startIndex, endIndex);
+          // output data if there are any changes
+          if (!argv.check && (processVars > 0 || processedBlocks > 0)) {
+            if (argv.print) {
+              vlog("Writing output to stdout...");
+              console.log(data);
+            } else if (argv.output) {
+              vlog(`Writing output to file ${argv.output}...`);
+              fs.writeFileSync(argv.output, data);
             } else {
-              // no true command, so remove completly
-              templateText = "";
+              // replace original files
+              vlog(`Writing output to file ${file}...`);
+              fs.writeFileSync(file, data);
             }
-            // replace raw data with templated data
-            data = replaceBetween(data, startIndexMain, endIndexMain, templateText);
           }
 
-          // check if there are still unmatched commands left
-          const unmatchedCommands = data.matchAll(/\$\[(.*?)\]\$/g);
-          let numUnmatched = 0;
-          for (const match of unmatchedCommands) {
-            numUnmatched++;
-            err(chalk.red(`Command '${match[0]}' found but it is not part of any block.`));
-          }
-          if (numUnmatched > 0) {
-            err(chalk.red(`Found ${numUnmatched} unmatched commands. Please check your syntax.`));
-            stop(1);
-          }
-        }
-
-        // replace variables ${}$ with their values
-        if (argv.vars) {
-          // save all variables matches in array
-          const variables: string[] = [];
-          for (const _m of data.matchAll(/\$\{(.*?)\}\$/g)) variables.push(_m[0].trim());
-          vlog(variables);
-
-          // replace all variables in raw data with placeholder
-          data = data.replaceAll(
-            /\$\{(.*?)\}\$/g,
-            (() => {
-              processCmds++;
-              processedBlocks++;
-
-              let number = 0;
-              return () => {
-                return "$$var:" + number++ + "$$";
-              };
-            })()
-          );
-
-          // foreach variable match: parse
-          for (let i = 0; i < variables.length; i++) {
-            variables[i] = await parseArg(variables[i].slice(2, -2), true);
-          }
-
-          // replace all placeholders with variable values
-          let varCtr = 0;
-          data = data.replaceAll(/\$\$(.*?)\$\$/g, () => {
-            return variables[varCtr++];
-          });
-        }
-
-        // output validation result or data
-        if (!argv.check) {
-          if (argv.output === "stdout") {
-            console.log(data);
-          } else {
-            fs.writeFileSync(argv.output, data);
-          }
-        }
-
-        if (argv.check || argv.verbose) {
-          // warn if there are no matches/blocks
-          if (processedBlocks === 0) {
-            log(chalk.yellow("No blocks found."));
-          } else {
-            // output processed blocks
-            log(chalk.green(`Processed ${processCmds} commands in ${processedBlocks} blocks.`));
-            log(chalk.green(`Syntax OK.`));
+          if (argv.check || argv.verbose) {
+            // warn if there are no matches/blocks
+            if (processedBlocks === 0) {
+              log(chalk.gray(`${file}: `) + chalk.yellow("No blocks found."));
+            } else {
+              // output processed blocks
+              log(chalk.gray(`${file}: `) + chalk.green(`Processed ${processedBlocks} blocks and ${processVars} prints. Syntax OK.`));
+            }
           }
         }
 
