@@ -373,7 +373,7 @@ process.emit = function (name, data: any, ...args) {
           stop(1);
         }
 
-        const files = await glob((argv.file ?? []).split(","), { absolute: false, nodir: true, dot: true, ignore: (argv.ignore ?? []).split(",") });
+        const files = await glob((argv.file ?? []).split(";"), { absolute: false, nodir: true, dot: true, ignore: (argv.ignore ?? []).split(";") });
 
         // check if there are any files
         if (files.length === 0) {
