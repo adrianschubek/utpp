@@ -98,6 +98,15 @@ process.emit = function (name, data: any, ...args) {
             describe: "disables inclusion from urls",
             type: "boolean",
           })
+          .option("env", {
+            type: "boolean",
+            default: true,
+            hidden: true,
+          })
+          .option("no-env", {
+            describe: "disables inclusion of environment variables",
+            type: "boolean",
+          })
           .option("template", {
             type: "boolean",
             default: true,
@@ -136,6 +145,12 @@ process.emit = function (name, data: any, ...args) {
             if (arg.startsWith("env:")) {
               // is env variable
               const envVar = await parseArg(arg.slice(4));
+
+              if (!argv.env) {
+                console.log(chalk.red(`Unable to import env variable '${envVar}' because option '--no-env' is set`));
+                stop(1);
+              }
+
               if (process.env[envVar] === undefined) {
                 err(chalk.red(`Environment variable '${envVar}' does not exist.`));
                 return stop(1);
@@ -525,16 +540,16 @@ process.emit = function (name, data: any, ...args) {
           }
 
           let processVars = 0;
-          // replace variables ${}$ with their values
+          // replace variables with their values
           if (argv.vars) {
             // save all variables matches in array
             const variables: string[] = [];
-            for (const _m of data.matchAll(/\$\{(.*?)\}\$/g)) variables.push(_m[0].trim());
+            for (const _m of data.matchAll(/\$\{\{(.*?)\}\}\$/g)) variables.push(_m[0].trim());
             vlog(variables);
 
             // replace all variables in raw data with placeholder
             data = data.replaceAll(
-              /\$\{(.*?)\}\$/g,
+              /\$\{\{(.*?)\}\}\$/g,
               (() => {
                 let number = 0;
                 return () => {
@@ -546,12 +561,13 @@ process.emit = function (name, data: any, ...args) {
 
             // foreach variable match: parse
             for (let i = 0; i < variables.length; i++) {
-              variables[i] = await parseArg(variables[i].slice(2, -2), true);
+              variables[i] = await parseArg(variables[i].slice(3, -3).trim(), true);
             }
 
             // replace all placeholders with variable values
             data = data.replaceAll(/\$\%\$(.*?)\$\%\$/g, (match) => {
               // $%$var:123$%$ => 123
+              if (!match.startsWith("$%$var:")) return match;
               return variables[+match.slice(7, -3)];
             });
           }

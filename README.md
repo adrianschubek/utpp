@@ -127,7 +127,9 @@ Variables can be declared on CLI execution using `key=value` pairs or just a `ke
 Statements ending in `s` (e.g. `ifeqs`) can set a variable when their statement evaluates to `true`. (see [reference](#commands-reference))
 
 #### Printing
-Outputting a variable can be done using `${<value>}$` (curly braces) where `<value>` is any value defined [above](#values).
+Outputting a variable can be done using `${{<value>}}$` (curly braces) where `<value>` is any value defined [above](#values).
+
+> *Note:* Since version 0.3.0+ the syntax for printing variables has changed from `${<value>}$` to `${{<value>}}$` to avoid some common conflicts.
 
 ## Examples
 
@@ -137,18 +139,18 @@ foobar
 $[if `1 + 2 == 4`]$
 a
 $[ifeq foo bar]$
-b ${foo}$
+b ${{foo}}$
 $[else]$
 c
 $[end]$
 
-${`0.1 + 0.2`}$
+${{`0.1 + 0.2`}}$
 
-${file:incl.txt}$
+${{file:incl.txt}}$
 
-${url:https://httpbin.org/uuid}$
+${{url:https://example.com}}$
 
-${env:HOME}$
+${{env:HOME}}$
 ```
 *and incl.txt:* `This was included from incl.txt`
 

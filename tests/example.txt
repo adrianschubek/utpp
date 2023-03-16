@@ -1,18 +1,18 @@
-Hello ${`2+2 + 9.5`}$.
+Hello ${{`2+2 + 9.5`}}$.
 
 foobar
 $[if `1 + 2 == 4`]$
 a
 $[ifeq foo bar]$
-b ${foo}$
+b ${{foo}}$
 $[else]$
 c
 $[end]$
 
-${`0.1 + 0.2`}$
+${{   `0.1 + 0.2`  }}$
 
-${file:incl.txt}$
+${{file:incl.txt}}$
 
-${url:https://example.com}$
+${{url:https://example.com}}$
 
-${env:HOME}$
+${{env:HOME}}$
