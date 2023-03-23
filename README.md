@@ -40,7 +40,7 @@ npx utpp
 #### Using Precompiled binaries
 
 ```
-curl -fSsL https://github.com/adrianschubek/utpp/releases/latest/download/utpp-linux -o /usr/local/bin/utpp && chmod +x /usr/local/bin/utpp
+sudo curl -fSsL https://github.com/adrianschubek/utpp/releases/latest/download/utpp-linux -o /usr/local/bin/utpp && sudo chmod +x /usr/local/bin/utpp
 ```
 
 Precompiled binaries for  **Linux** (x64, alpine) and **Windows** (x64) are published every [release](https://github.com/adrianschubek/utpp/releases).
