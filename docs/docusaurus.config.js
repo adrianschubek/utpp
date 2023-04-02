@@ -52,6 +52,14 @@ const config = {
             'https://github.com/adrianschubek/utpp/tree/main/docs/',
 
           sidebarCollapsible: false,
+
+         /*  lastVersion: 'current',
+          versions: {
+            current: {
+              label: '0.3.x',
+              path: '0.3.x',
+            },
+          }, */
         },
         blog: false,
         theme: {
