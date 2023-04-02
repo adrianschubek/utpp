@@ -93,7 +93,7 @@ const config = {
       footer: {
         style: 'dark',
         links: [
-          {
+         /*  {
             title: 'Docs',
             items: [
               {
@@ -101,7 +101,7 @@ const config = {
                 to: '/docs/intro',
               },
             ],
-          },
+          }, */
           {
             title: 'Community',
             items: [
@@ -122,10 +122,10 @@ const config = {
           {
             title: 'More',
             items: [
-              {
+            /*   {
                 label: 'Blog',
                 to: '/blog',
-              },
+              }, */
               {
                 label: 'GitHub',
                 href: 'https://github.com/facebook/docusaurus',
@@ -133,7 +133,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Adrian Schubek`,
       },
       prism: {
         theme: lightCodeTheme,
