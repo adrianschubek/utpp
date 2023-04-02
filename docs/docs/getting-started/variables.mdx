@@ -1,0 +1,11 @@
+---
+sidebar_position: 7
+---
+
+# Variables
+
+A variable can be used inside a template block's *Value* argument by using its name. Variables are stored globally and changes to a variable can only affect statements declared **after** the current one. 
+
+Variables can be declared on CLI execution using `key=value` pairs or just a `key`. Multiple variables can be passed as arguments by using spaces like `foo=bar foz="baz 123" foobar`.
+
+Statements ending in `s` (e.g. `ifeqs`) can set a variable when their statement evaluates to `true`. (see [reference](#commands-reference))

@@ -37,6 +37,17 @@ token-line {
   /* background-color: rgb(26, 26, 26); */
 }
 
+.menu__list-item-collapsible > .menu__link {
+  font-weight: 700;
+  color: #cdddfc;
+}
+
+.menu__link--active {
+  background: #2c2c2c !important;
+  border-width: 3px;
+  border-style: none none none dotted;
+}
+
 /* You can override the default Infima variables here. */
 :root {
   --ifm-menu-color: white;

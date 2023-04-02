@@ -1,0 +1,12 @@
+---
+sidebar_position: 6
+---
+
+# Values
+- Values can reference Variables by using their name (e.g. `foo` where `foo` is  variable).
+- Values are treated as strings by default and cannot contain spaces (e.g. `foobar123`).
+- Values surrounded by `"` are treated as strings and can contain spaces (e.g. `"foo bar"`).
+- Values surrounded by `` ` `` (backticks) are evaluated using JavaScript's `eval` function. This means you can use any valid JavaScript expression inside (e.g. `` `0.1 + 0.2` ``).
+- Values starting with `file:` are treated as file paths and the file's content is used as the value (e.g. `file:foo.txt` where `foo.txt` is a file relative to the preprocessed file.).
+- Values starting with `url:` are treated as URLs and the URL's content is used as the value (e.g. `url:https://myapi.com/version`).
+- Values starting with `env:` are treated as environment variables and the environment variable's value is used as the value (e.g. `env:HOME`).

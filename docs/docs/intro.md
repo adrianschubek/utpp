@@ -3,55 +3,36 @@ sidebar_position: 1
 slug: /
 ---
 
-# 👋 Tutorial Intro
+# 👋 Welcome
 
-Let's discover **Docusaurus in less than 5 minutes**.
+![](/img/utpp.png)
 
-## Getting Started
+<div align="center">
 
-Get started by **creating a new site**.
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+[![npm](https://img.shields.io/npm/v/utpp?color=blue&style=for-the-badge)](https://www.npmjs.com/package/utpp)
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
-
-### What you'll need
-
-- [Node.js](https://nodejs.org/en/download/) version 16.14 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
-
-<div class="alert alert--primary" role="alert">
-  <button aria-label="Close" class="clean-btn close" type="button">
-    <span aria-hidden="true">&times;</span>
-  </button>
-  This is a
-  <strong>primary</strong>
-  alert. You should probably pay attention to it.
 </div>
+
+## Features
+- **Universal**: works with any file format
+- **Branching**: use if/else logic to include/exclude/modify parts of your file
+- **Variables**: use placeholders in your file and replace them with variables
+- **Scripting**: execute custom JavaScript code anywhere
+- **Portable**: works on any platform (Windows, Linux, MacOS, Docker containers etc.)
+
+## Use Cases
+- Dynamically modifiy static config files based on user input
+- Replace placeholder with custom eval'd JavaScript on startup
+- Start a supervisor service conditionally using docker run arguments. 
+- Use different compile commands based on user's current architecture
+- and many more...
+
+<details>
+<summary>Screenshots</summary>
+
+![](/img/p1.png)
+![](/img/p2.png)
+![](/img/p3.png)
+
+</details>
