@@ -19,7 +19,8 @@ h6 {
 
 code,
 token-line {
-  font-family: "Consolas", monospace !important;
+  /* font-family: "Consolas", monospace !important; */
+  font-family: unset;
   /* font-family: 'JetBrains Mono', monospace !important; */
 }
 
@@ -40,6 +41,8 @@ token-line {
 :root {
   --ifm-menu-color: white;
   --ifm-footer-background-color: rgb(26, 26, 26);
+  --ifm-global-shadow-lw: none;
+  --ifm-navbar-background-color: #F5F5F5;
 
   --ifm-color-primary: #2e4385;
   --ifm-color-primary-dark: #293c78;
@@ -59,6 +62,8 @@ token-line {
 [data-theme="dark"] {
   --ifm-menu-color: white;
   --ifm-footer-background-color: rgb(26, 26, 26);
+  --ifm-navbar-background-color: #242526;
+
 
   --ifm-color-primary: #c2d6ff;
   --ifm-color-primary-dark: #95b8ff;
