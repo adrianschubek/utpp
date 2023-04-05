@@ -30,6 +30,17 @@ _Linux-alpine_ binaries are designed to be used in docker containers.
 
 **MacOS** and _arm_ binaries are not published yet, but you can compile them yourself (see below).
 
+### Inside containers
+
+If you want to use utpp inside a (alpine) docker container, you can use the alpine binaries.
+
+```dockerfile title="Dockerfile"
+# using curl:
+RUN curl -fSsL https://github.com/adrianschubek/utpp/releases/latest/download/utpp-linux -o /usr/local/bin/utpp && sudo chmod +x /usr/local/bin/utpp
+# using wget:
+RUN wget -q https://github.com/adrianschubek/utpp/releases/latest/download/utpp-linux -O /usr/local/bin/utpp
+```
+
 ### Compile binaries yourself
 
 1. clone this repo
