@@ -6,8 +6,6 @@ sidebar_position: 2
 
 ```mermaid
 graph LR;
-    a(Read files)-->B;
-    A-->C;
-    B-->D;
-    C-->D;
+    a(Read file)-->b[Apply template]-->c[Apply variables]-->e(Write file);
+
 ```
