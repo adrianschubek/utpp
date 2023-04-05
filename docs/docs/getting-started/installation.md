@@ -36,9 +36,9 @@ If you want to use utpp inside a (alpine) docker container, you can use the alpi
 
 ```dockerfile title="Dockerfile"
 # using curl:
-RUN curl -fSsL https://github.com/adrianschubek/utpp/releases/latest/download/utpp-linux -o /usr/local/bin/utpp && sudo chmod +x /usr/local/bin/utpp
+RUN curl -fSsL https://github.com/adrianschubek/utpp/releases/latest/download/utpp-linux -o /usr/local/bin/utpp && chmod +x /usr/local/bin/utpp
 # using wget:
-RUN wget -q https://github.com/adrianschubek/utpp/releases/latest/download/utpp-linux -O /usr/local/bin/utpp
+RUN wget -q https://github.com/adrianschubek/utpp/releases/latest/download/utpp-linux -O /usr/local/bin/utpp && chmod +x /usr/local/bin/utpp
 ```
 
 ### Compile binaries yourself
