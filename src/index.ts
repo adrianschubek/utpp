@@ -24,6 +24,7 @@ process.emit = function (name, data: any, ...args) {
     .version()
     .example("utpp -o out.txt input.txt", "runs the preprocessor on input.txt and write output to out.txt")
     .example("utpp input.txt foo=bar", "runs the preprocessor on input.txt and sets variable foo to bar")
+    .example('utpp "*/**" foo=bar', "runs the preprocessor on all files in the current & sub directory and sets variable foo to bar")
     .example("utpp -c input.txt", "validates the syntax of input.txt file")
     .command(
       ["run <file>", "$0"],
@@ -124,6 +125,14 @@ process.emit = function (name, data: any, ...args) {
           .option("no-vars", {
             describe: "disables variables replacement",
             type: "boolean",
+          })
+          .option("ignore-unkown", {
+            describe: "ignores unknown commands to improve compat",
+            type: "boolean",
+          })
+          .option("safe", {
+            describe: "enables safe mode: only process marked files",
+            type: "boolean",
           });
       },
       async (argv: any) => {
@@ -138,7 +147,7 @@ process.emit = function (name, data: any, ...args) {
         type RetType = boolean;
 
         // for parseArg relative file includes
-        let currentFilename = "";
+        let file: string = "";
 
         const parseArg = async (arg: string, failOnNotFound: boolean = false): Promise<string> => {
           return new Promise(async (resolve) => {
@@ -165,7 +174,7 @@ process.emit = function (name, data: any, ...args) {
                 stop(1);
               }
 
-              const fullPath = path.resolve(path.dirname(currentFilename) + path.sep + relativePath);
+              const fullPath = path.resolve(path.dirname(file) + path.sep + relativePath);
               if (!fs.existsSync(fullPath)) {
                 err(
                   chalk.red(`File '${fullPath}' does not exist. Make sure that '${relativePath}' is relative to '${path.dirname(argv.file)}' folder.`)
@@ -199,7 +208,7 @@ process.emit = function (name, data: any, ...args) {
                 console.log(chalk.red(`JavaScript evaluation \`${arg}\` is disabled, because option '--no-eval' is set`));
                 stop(1);
               }
-              return resolve(eval(arg.slice(1, -1)));
+              return resolve((0, eval)(arg.slice(1, -1)));
               // is string
             } else if (arg.startsWith('"') && arg.endsWith('"')) {
               return resolve(arg.slice(1, -1));
@@ -209,7 +218,13 @@ process.emit = function (name, data: any, ...args) {
               // raw string
             } else {
               if (failOnNotFound) {
-                console.log(chalk.red(`Variable '${arg}' is not defined`));
+                // to remove: ignore not found if safemode and leave var unchanged
+                /* if (argv.ignoreUnkown) {
+                  log(chalk.yellow(`Ignoring unknown command '${arg}'`));
+                  return resolve("${{" + arg + "}}$");
+                } */
+
+                log(chalk.red(`Variable '${arg}'s is not defined`));
                 stop(1);
               } else return resolve(arg);
             }
@@ -356,12 +371,12 @@ process.emit = function (name, data: any, ...args) {
 
         // default log
         const log = (message?: any, ...optionalParams: any[]) => {
-          if (!argv.quiet) console.log(message, ...optionalParams);
+          if (!argv.quiet) console.log(chalk.gray(`${file}: `) + message, ...optionalParams);
         };
 
         // error log (even if quiet)
         const err = (message?: any, ...optionalParams: any[]) => {
-          console.log(message, ...optionalParams);
+          console.log(chalk.gray(`${file}: `) + message, ...optionalParams);
         };
 
         // verbose log (uses default log)
@@ -410,19 +425,25 @@ process.emit = function (name, data: any, ...args) {
         vlog("Files", files);
 
         for (let i = 0; i < files.length; i++) {
-          const file = files[i];
-          currentFilename = file;
-          vlog(`Processing file ${i + 1}/${files.length}: ${file}`);
+          file = files[i];
+          vlog(`Processing file ${i + 1}/${files.length}`);
 
           // raw file data
           let data = fs.readFileSync(file, "utf-8").toString();
+
+          // if safe mode: check if marker exists else skip file
+          if (argv.safe && !data.includes("///utpp")) {
+            log(chalk.yellow(`Ignoring file. (safe mode)`));
+            continue;
+          }
+          data = data.replaceAll("///utpp", "");
 
           let processedBlocks = 0;
 
           if (argv.template) {
             const blockMatches = data.matchAll(/(\$\[(.*?)\]\$)([\w\W]*?)(\$\[end\]\$)/g) || [];
 
-            for (const block of blockMatches) {
+            blocks: for (const block of blockMatches) {
               processedBlocks++;
               blockId++;
               vlog(">> NEXT BLOCK ");
@@ -461,8 +482,8 @@ process.emit = function (name, data: any, ...args) {
                 const command = commands.find((c) => c.name === cmdArgs[0].trim());
                 if (!command) {
                   err(chalk.red(`Command '${cmdArgs[0]}' does not exist.`));
-                  stop(1);
-                  continue;
+                  if (!argv.ignoreUnkown) stop(1);
+                  continue blocks;
                 }
 
                 // check if command arguments count is correct
@@ -531,11 +552,15 @@ process.emit = function (name, data: any, ...args) {
             let numUnmatched = 0;
             for (const match of unmatchedCommands) {
               numUnmatched++;
-              err(chalk.red(`Command '${match[0]}' found but it is not part of any block.`));
+              if (!argv.ignoreUnkown) err(chalk.red(`Command '${match[0]}' found but it is not part of any block.`));
             }
             if (numUnmatched > 0) {
-              err(chalk.red(`Found ${numUnmatched} unmatched commands. Please check your syntax.`));
-              stop(1);
+              if (!argv.ignoreUnkown) {
+                err(chalk.red(`Found ${numUnmatched} unmatched commands. Please check your syntax.`));
+                stop(1);
+              } else {
+                log(chalk.yellow(`Ignoring ${numUnmatched} unmatched commands.`));
+              }
             }
           }
 
@@ -590,10 +615,10 @@ process.emit = function (name, data: any, ...args) {
           if (argv.check || argv.verbose) {
             // warn if there are no matches/blocks
             if (processedBlocks === 0) {
-              log(chalk.gray(`${file}: `) + chalk.yellow("No blocks found."));
+              log(chalk.yellow("No blocks found."));
             } else {
               // output processed blocks
-              log(chalk.gray(`${file}: `) + chalk.green(`Processed ${processedBlocks} blocks and ${processVars} prints. Syntax OK.`));
+              log(chalk.green(`Processed ${processedBlocks} blocks and ${processVars} prints. Syntax OK.`));
             }
           }
         }
