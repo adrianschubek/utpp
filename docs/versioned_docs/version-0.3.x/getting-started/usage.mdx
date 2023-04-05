@@ -7,32 +7,30 @@ sidebar_position: 3
 ```
 Universal Text Pre-Processor ('utpp') is a tool for preprocessing any file
 
-Usage: utpp [options] <file> [variables]
-
-Positionals:
-  file, f  the file to preprocess                                       [string]
+Usage: utpp [options] <files> [variables]
 
 Options:
       --help         Show help                                         [boolean]
       --version      Show version number                               [boolean]
-  -o, --output       the output file                [string] [default: "stdout"]
-  -c, --check        checks/validates the file only   [boolean] [default: false]
-  -v, --verbose      makes the preprocessor verbose   [boolean] [default: false]
+  -o, --output       write to output file                               [string]
+  -c, --check        checks the file's syntax only    [boolean] [default: false]
+  -v, --verbose      show more debug logs             [boolean] [default: false]
+  -p, --print        prints the output to stdout instead of files      [boolean]
   -q, --quiet        makes the preprocessor quiet     [boolean] [default: false]
+      --ignore       glob pattern to ignore files         [string] [default: ""]
       --no-eval      disables eval function                            [boolean]
       --no-files     disables inclusion from files                     [boolean]
       --no-urls      disables inclusion from urls                      [boolean]
+      --no-env       disables inclusion of environment variables       [boolean]
       --no-template  disables template replacement                     [boolean]
       --no-vars      disables variables replacement                    [boolean]
 
 Examples:
-  utpp -o out.txt input.txt    runs the preprocessor on input.txt and write
-                               output to out.txt
-  utpp input.txt foo=bar       runs the preprocessor on input.txt and sets
-                               variable foo to bar
-  utpp input.txt -m "<#" "#>"  runs the preprocessor on input.txt and write
-                               output to out.txt with markers <# and #>
-  utpp -c input.txt            validates the syntax of input.txt file
+  utpp -o out.txt input.txt  runs the preprocessor on input.txt and write output
+                             to out.txt
+  utpp input.txt foo=bar     runs the preprocessor on input.txt and sets
+                             variable foo to bar
+  utpp -c input.txt          validates the syntax of input.txt file
 
 for more info and support visit https://github.com/adrianschubek/utpp
 ```
