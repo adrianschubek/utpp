@@ -37,6 +37,9 @@ process.emit = function (name, data: any, ...args) {
             type: "string",
             demandOption: true,
           })
+          .option("version", {
+            alias: "V",
+          })
           .option("output", {
             alias: "o",
             describe: "write to output file",
@@ -71,6 +74,11 @@ process.emit = function (name, data: any, ...args) {
             describe: "glob pattern to ignore files",
             type: "string",
             default: "",
+          })
+          .option("encoding", {
+            describe: "encoding of the input file",
+            type: "string",
+            default: "utf8",
           })
           .option("eval", {
             type: "boolean",
@@ -433,14 +441,22 @@ process.emit = function (name, data: any, ...args) {
           vlog(`Processing file ${i + 1}/${files.length}`);
 
           // raw file data
-          let data = fs.readFileSync(file, "utf-8").toString();
-
-          // if safe mode: check if marker exists else skip file
-          if (argv.safe && !data.includes("///utpp")) {
-            log(chalk.yellow(`Ignoring file. (safe mode)`));
+          let data: string | null = null;
+          try {
+            data = fs.readFileSync(file, argv.encoding).toString();
+          } catch (error) {
+            err(chalk.red(`Error reading file: ${error}`));
             continue;
           }
-          data = data.replaceAll("///utpp", "");
+
+          // if safe mode: check if marker exists else skip file
+          if (argv.safe) {
+            if (!data.includes("///utpp")) {
+              log(chalk.yellow(`Ignoring file. (safe mode)`));
+              continue;
+            }
+            data = data.replaceAll("///utpp", "");
+          }
 
           let processedBlocks = 0;
 
