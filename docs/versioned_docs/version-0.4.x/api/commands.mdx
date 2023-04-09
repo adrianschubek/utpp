@@ -4,6 +4,8 @@
 
 `if <value>` - return true when `<value>` is truthy, otherwise false.
 
+`ifn <value>` - return true when `<value>` is falsy, otherwise false.
+
 `ifdef <name>` - return true when a variable with name `<name>` is defined, otherwise false.
 
 `ifndef <name>` - return true when a variable with name `<name>` is not defined, otherwise false.
@@ -21,6 +23,10 @@
 `ifle <value1> <value2>` - return true when `<value1>` is less than or equal to `<value2>`, otherwise false.
 
 ## Commands with side effects
+
+`ifs <value> <variable> <newvalue>` - return true when `<value>` is truthy, otherwise false. If the statement is true, `<variable>` will be set to `<newvalue>`.
+
+`ifns <value> <variable> <newvalue>` - return true when `<value>` is falsy, otherwise false. If the statement is true, `<variable>` will be set to `<newvalue>`.
 
 `ifdefs <name> <variable> <newvalue>` - return true when a variable with name `<name>` is defined, otherwise false. If the statement is true, `<variable>` will be set to `<newvalue>`.
 
