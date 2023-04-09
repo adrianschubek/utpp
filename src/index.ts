@@ -37,9 +37,7 @@ process.emit = function (name, data: any, ...args) {
             type: "string",
             demandOption: true,
           })
-          .option("version", {
-            alias: "V",
-          })
+          .alias("version", "V")
           .option("output", {
             alias: "o",
             describe: "write to output file",
