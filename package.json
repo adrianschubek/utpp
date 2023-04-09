@@ -8,7 +8,7 @@
     "test": "jest",
     "build": "tsc",
     "build:watch": "tsc -w",
-    "pack:release": "rm -rf dist && pkg . --compress Brotli --out-path dist --targets node18-alpine-x64,node18-linux-x64,node18-win-x64 && find 'dist' -print0 | xargs -0 -n1 -I % tar zcpf %.tar.gz %",
+    "pack:release": "rm -rf dist && pkg . --compress Brotli --out-path dist --targets node18-alpine-x64,node18-linux-x64,node18-win-x64 && find 'dist' -print0 | xargs -0 -n1 -I % tar zcpf %.tar.gz % && rm -f dist.tar.gz",
     "pack:lw": "pkg . --compress Brotli --out-path dist --targets node18-alpine-x64,node18-linux-x64,node18-win-x64",
     "pack": "pkg . --compress Brotli --out-path dist --targets node18-alpine-x64,node18-linux-x64,node18-linux-arm64,node18-macos-x64,node18-macos-arm64,node18-win-x64",
     "build:npm": "esbuild src/index.ts --bundle --minify --outfile=bin/index.js --platform=node --target=node18 --packages=external"
