@@ -218,12 +218,6 @@ process.emit = function (name, data: any, ...args) {
               // raw string
             } else {
               if (failOnNotFound) {
-                // to remove: ignore not found if safemode and leave var unchanged
-                /* if (argv.ignoreUnkown) {
-                  log(chalk.yellow(`Ignoring unknown command '${arg}'`));
-                  return resolve("${{" + arg + "}}$");
-                } */
-
                 log(chalk.red(`Variable '${arg}'s is not defined`));
                 stop(1);
               } else return resolve(arg);
@@ -241,6 +235,11 @@ process.emit = function (name, data: any, ...args) {
           {
             name: "if",
             action: async (args: string[]): Promise<RetType> => !!(await parseArg(args[0])),
+            argsCount: 1,
+          },
+          {
+            name: "ifn",
+            action: async (args: string[]): Promise<RetType> => !(await parseArg(args[0])),
             argsCount: 1,
           },
           {
@@ -288,6 +287,15 @@ process.emit = function (name, data: any, ...args) {
             name: "ifs",
             action: async (args: string[]): Promise<RetType> => {
               const result = !!(await parseArg(args[0]));
+              if (result) variables.set(args[1], await parseArg(args[2]));
+              return result;
+            },
+            argsCount: 3,
+          },
+          {
+            name: "ifns",
+            action: async (args: string[]): Promise<RetType> => {
+              const result = !(await parseArg(args[0]));
               if (result) variables.set(args[1], await parseArg(args[2]));
               return result;
             },
