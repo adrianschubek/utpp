@@ -193,10 +193,6 @@ process.emit = function (name, data: any, ...args) {
               }
               try {
                 const response = await fetch(await url);
-                if (response.status !== 200) {
-                  err(chalk.red(`Unable to import URL '${url}' because it returned status code ${response.status}.`));
-                  stop(1);
-                }
                 return resolve(await response.text());
               } catch (e: any) {
                 err(chalk.red(`Unable to import URL '${url}' because of error: ${e.message}`));
