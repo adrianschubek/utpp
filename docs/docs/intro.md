@@ -28,6 +28,10 @@ slug: /
 - Use different compile commands based on user's current architecture
 - and many more...
 
+:::info
+For a real world example checkout the [container usage](/examples/docker)
+:::
+
 <details>
 <summary>Screenshots</summary>
 

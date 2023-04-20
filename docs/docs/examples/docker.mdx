@@ -1,0 +1,55 @@
+---
+sidebar_position: 2
+---
+
+# Container
+
+`utpp` was intended to be used inside containers. It is a single binary that can be used to modify configuration files and dynamically execute JavaScript.
+
+:::info
+The following real world example can be found in the [adrianschubek/dir-browser](https://github.com/adrianschubek/dir-browser/blob/main/src/init.sh#L2) repo.
+:::
+
+```bash title="/server/init.sh"
+utpp "/etc/nginx/**;/etc/supervisor/**;/usr/local/etc/php*/**;/var/www/html/index.php" && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+```
+
+In the example above we are using `utpp` to modify various configuration files such as PHP, Nginx, and Supervisor config files. These modifications are done at container
+startup and a user can configure it by setting environment variables.
+
+```bash title="/server/supervisor/supervisord.conf"
+[program:nginx]
+command=nginx -g 'daemon off;'
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+autorestart=unexpected
+startretries=0
+
+$[if `!process.env.NO_DL_COUNT`]$
+[program:redis]
+command=redis-server /etc/redis.conf --save 60 1
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+autorestart=unexpected
+startretries=0
+$[end]$
+```
+
+Here if a user runs the container with the `NO_DL_COUNT` environment variable set to `true` the `redis` process will not be started by the supervisor (and saves resources).
+
+```php title="/server/php/php.ini"
+memory_limit=${{`process.env.MEM_LIMIT ?? '256M'`}}$
+display_errors=${{`process.env.DISPLAY_ERRORS ?? 'Off'`}}$
+```
+User can also configure php.ini settings by specifiying environment variables. 
+In the example above the `MEM_LIMIT` and `DISPLAY_ERRORS` environment variables are used to configure the `memory_limit` and `display_errors` settings.
+If the environment variables are not set the default values will be used.
+
+:::tip
+Remember that u can use any JavaScript expression between apostrophes `` ` js here ` ``. This will be evaluted using Node.js `eval` function, so you have access to all
+**Node.js APIs** like `process`.
+:::
