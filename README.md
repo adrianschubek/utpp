@@ -12,7 +12,7 @@
 
 <h2 align="center">
 
-  Visit [utpp.adriansoftware.de](https://utpp.adriansoftware.de) for docs, guides, API & more! 
+  Visit [utpp.adriansoftware.de](https://utpp.adriansoftware.de) for documentation & more! 
 
 </h2>
 
