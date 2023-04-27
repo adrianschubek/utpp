@@ -76,17 +76,18 @@ const config = {
       image: 'img/utpp.png',
       navbar: {
         title: 'utpp',
-        logo: {
+        /* logo: {
           alt: 'My Site Logo',
           src: 'img/logo.svg',
-        },
+        }, */
         items: [
-          /*   {
-              type: 'docSidebar',
-              sidebarId: 'tutorialSidebar',
-              position: 'left',
-              label: 'Tutorial',
-            },
+          {
+            type: 'docSidebar',
+            sidebarId: 'tutorialSidebar',
+            position: 'left',
+            label: 'Docs',
+          },
+          /*  
             { to: '/blog', label: 'Blog', position: 'left' }, */
           {
             type: 'docsVersionDropdown',

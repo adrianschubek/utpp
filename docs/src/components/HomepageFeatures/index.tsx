@@ -1,68 +1,58 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.css';
-
-type FeatureItem = {
-  title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
-  description: JSX.Element;
-};
-
-const FeatureList: FeatureItem[] = [
-  {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
-    description: (
-      <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
-      </>
-    ),
-  },
-  {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
-    description: (
-      <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
-      </>
-    ),
-  },
-  {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
-    description: (
-      <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
-      </>
-    ),
-  },
-];
-
-function Feature({title, Svg, description}: FeatureItem) {
-  return (
-    <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
-      </div>
-      <div className="text--center padding-horiz--md">
-        <h3>{title}</h3>
-        <p>{description}</p>
-      </div>
-    </div>
-  );
-}
+import React from "react";
+import clsx from "clsx";
+import styles from "./styles.module.css";
+import Checkmark from "../Checkmark";
 
 export default function HomepageFeatures(): JSX.Element {
   return (
     <section className={styles.features}>
       <div className="container">
         <div className="row">
-          {FeatureList.map((props, idx) => (
-            <Feature key={idx} {...props} />
-          ))}
+          <div className={clsx("col col--3")}>
+            <div className="text--center">
+              <img style={{ maxHeight: "100px" }} src="/img/world.svg"></img>
+            </div>
+            <div className="text--center padding-horiz--md">
+              <h3>Runs anywhere<Checkmark/></h3>
+              <p>
+              Application is self-contained in a single binary and works on <b>all</b> platforms and <b>any</b> filetype.
+              </p>
+            </div>
+          </div>
+          <div className={clsx("col col--3")}>
+            <div className="text--center">
+              <img style={{ maxHeight: "100px" }} src="/img/logic.svg"></img>
+            </div>
+            <div className="text--center padding-horiz--md">
+              <h3>Powerful Logic<Checkmark/></h3>
+              <p>
+                Use if/else logic to modify parts of your file, import external data from APIs, output environemnt variables etc.
+              </p>
+            </div>
+          </div>
+          <div className={clsx("col col--3")}>
+            <div className="text--center">
+              <img style={{ maxHeight: "100px" }} src="/img/node.svg"></img>
+            </div>
+            <div className="text--center padding-horiz--md">
+              <h3>Execute JavaScript<Checkmark/></h3>
+              <p>
+                Run custom JS code anywhere with full access to all Node.js APIs like <i>process</i>.
+              </p>
+            </div>
+          </div>
+          <div className={clsx("col col--3")}>
+            <div className="text--center">
+              <img style={{ maxHeight: "100px" }} src="/img/docker.webp"></img>
+            </div>
+            <div className="text--center padding-horiz--md">
+              <h3>Designed for containers<Checkmark/></h3>
+              <p>
+                Easily run it in a docker container using the <i>Alpine</i> image.
+              </p>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>

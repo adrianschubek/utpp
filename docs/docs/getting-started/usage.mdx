@@ -11,13 +11,14 @@ Usage: utpp [options] <files> [variables]
 
 Options:
       --help           Show help                                       [boolean]
-      --version        Show version number                             [boolean]
+  -V, --version        Show version number                             [boolean]
   -o, --output         write to output file                             [string]
   -c, --check          checks the file's syntax only  [boolean] [default: false]
   -v, --verbose        show more debug logs           [boolean] [default: false]
   -p, --print          prints the output to stdout instead of files    [boolean]
   -q, --quiet          makes the preprocessor quiet   [boolean] [default: false]
       --ignore         glob pattern to ignore files       [string] [default: ""]
+      --encoding       encoding of the input file     [string] [default: "utf8"]
       --no-eval        disables eval function                          [boolean]
       --no-files       disables inclusion from files                   [boolean]
       --no-urls        disables inclusion from urls                    [boolean]
@@ -45,6 +46,125 @@ For example `utpp "*/**" foo=bar` will run the preprocessor on all files in the 
 Or `utpp "foo.txt;bar.tex;baz.html"` will run the preprocessor on `foo.txt`, `bar.tex` and `baz.html`.
 :::
 
-:::info
+:::tip
 Show this help page by running `utpp`.
 :::
+
+### Running it on a single file
+
+```bash
+utpp input.txt
+```
+This will run the preprocessor on `input.txt` and write the output to `input.txt` as well.
+
+If you want to write the output to a different file, use the `-o` option:
+
+```bash
+utpp -o output.txt input.txt
+```
+This will run the preprocessor on `input.txt` and write the output to `output.txt`. The input file will not be modified.
+
+And if you want to print the output to stdout, use the `-p` option:
+
+```bash
+utpp -p input.txt
+```
+
+This will run the preprocessor on `input.txt` and print the output to stdout. This is useful if you want to pipe the output to another program.
+The input file will not be modified.
+
+### Running it on multiple files
+
+```bash
+utpp "*/**"
+```
+
+This will run the preprocessor on all files in the current directory and all subdirectories and write the output to the same files.
+
+If you want to write the output to stdout, use the `-p` option:
+
+```bash
+utpp -p "*/**"
+```
+
+:::info
+The `-o` option is not supported when running on multiple files.
+:::
+
+:::caution
+If you specify a wide glob pattern (such as "/**") you could run in on files you did not intend to run it on, which may result in errors.
+Make sure to read the [Safe Mode](/advanced/safe) option.
+:::
+
+### Using mutiple patterns
+
+You can specify multiple glob patterns by separating them with a semicolon <kbd>;</kbd> :
+
+```bash
+utpp "foo.txt;bar.tex;baz.html"
+```
+
+This will run the preprocessor on `foo.txt`, `bar.tex` and `baz.html` and write the output to the same files.
+
+### Ignoring files
+
+You can specify a glob pattern to ignore files by using the `--ignore` option:
+
+```bash
+utpp --ignore "*/**/*.txt" "*/**"
+```
+
+This will run the preprocessor on all files in the current directory and all subdirectories except for files ending with `.txt`.
+By seperating the patterns with a semicolon <kbd>;</kbd> you can specify multiple patterns to ignore.
+
+### Setting variables
+
+You can set variables by specifying them after the files argument:
+
+```bash
+utpp input.txt foo=bar
+```
+
+This will run the preprocessor on `input.txt` and set the variable `foo` to `bar`.
+You can also set multiple variables by leaving a space between them `foo=bar baz=qux`.
+
+:::tip
+When setting a value which contain spaces, you need to wrap it in quotes: `foo="bar baz"`.
+:::
+
+### Troubleshooting 
+
+Enable verbose mode by using the `-v` option:
+
+```bash
+utpp -v input.txt
+```
+
+This will print debug logs to the console. Checkout [Safe Mode](/advanced/safe) for further troubleshooting.
+
+### Checking the syntax only
+
+You can check the syntax of a file without running the preprocessor by using the `-c` option:
+
+```bash
+utpp -c input.txt
+```
+
+This will check the syntax of `input.txt` and print any errors to the console. Combine it with `-v` to print debug logs as well.
+
+### Silent mode
+
+You can make the preprocessor silent by using the `-q` option:
+
+```bash
+utpp -q input.txt
+```
+
+This wil supress any output to the console **except** errors. 
+
+:::tip
+You can also silence these errors and making utpp completly quiet by pipeing the output to `/dev/null`:
+
+```bash 
+utpp -q input.txt > /dev/null 2>&1
+```
