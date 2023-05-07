@@ -95,7 +95,7 @@ const config = {
           },
           {
             href: 'https://github.com/adrianschubek/utpp',
-            label: 'GitHub',
+            className: 'header-github-link',
             position: 'right',
           },
         ],
