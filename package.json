@@ -4,6 +4,17 @@
   "description": "Universal Text Pre-Processor",
   "main": "bin/index.js",
   "bin": "bin/npx.js",
+  "keywords": [
+    "utpp",
+    "text",
+    "preprocessor",
+    "pre-processor",
+    "pre-processing",
+    "universal",
+    "cli",
+    "file",
+    "macros"
+  ],
   "scripts": {
     "test": "jest",
     "build": "tsc",
