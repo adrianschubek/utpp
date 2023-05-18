@@ -160,8 +160,8 @@ export default function Home() {
 
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      title={`${siteConfig.title}`}
+      description="Universal Text Pre-Processor">
       <HomepageHeader />
       <main>
         {/* <Section2 /> */}
