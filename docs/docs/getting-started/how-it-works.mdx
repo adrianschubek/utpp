@@ -4,8 +4,44 @@ sidebar_position: 2
 
 # How it works
 
+For every file the following steps are performed:
+
 ```mermaid
 graph LR;
     a(Read file)-->b[Apply template]-->c[Apply variables]-->e(Write file);
-
 ```
+
+## 1. Read file
+
+The file is read from the filesystem and stored in memory.
+
+```x title="> cat foobar.txt"
+The answer is ${{´40+2´}}
+$[ifeq foo bar]$
+Hello ${{foo}}$
+$[else]$
+Bye
+$[end]$
+```
+
+## 2. Apply template
+
+The template is applied to the file. The template is a string that contains the variables and the logic to apply to the file.
+
+```x title="> utpp --no-vars foobar.txt foo=bar"
+The answer is ${{´40+2´}}
+Hello ${{foo}}$
+```
+
+## 3. Apply variables
+
+The variables are applied to the template. The variables are a key-value pair that contains the values to replace in the template.
+
+```x title="> utpp foobar.txt foo=bar"
+The answer is 42
+Hello bar
+```
+
+## 4. Write file
+
+The file is written to the filesystem or to the standard output depending on the cli arguments.
