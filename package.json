@@ -36,7 +36,7 @@
   "homepage": "https://github.com/adrianschubek/utpp#readme",
   "dependencies": {
     "chalk": "^4.1.2",
-    "glob": "^9.3.0",
+    "glob": "^9.3.5",
     "yargs": "^17.7.1"
   },
   "devDependencies": {
