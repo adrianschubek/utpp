@@ -48,7 +48,7 @@ export default function HomepageFeatures(): JSX.Element {
             <div className="text--center padding-horiz--md">
               <h3>Designed for containers<Checkmark/></h3>
               <p>
-                Easily run it in a docker container using the <i>Alpine</i> image.
+                Easily run it in a docker container using a single executable.
               </p>
             </div>
           </div>
